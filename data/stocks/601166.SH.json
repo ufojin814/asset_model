@@ -1,0 +1,62 @@
+{
+  "ticker": "601166.SH",
+  "name": "兴业银行",
+  "theme": "银行",
+  "industry": "股份行",
+  "_demo": true,
+  "_note": "演示种子数据（DEMO），非实时行情；真实数据经 src/dataProvider.js 接入 Wind/akshare。",
+  "fundamentals": {
+    "roa": 0.009,
+    "cfo": 0.015,
+    "roaDelta": 0,
+    "cfoMinusRoa": 0.006,
+    "levDelta": 0.004,
+    "curRatioDelta": 0.01,
+    "sharesDelta": 0,
+    "gmDelta": 0,
+    "atDelta": 0.05,
+    "wc": 0,
+    "re": 3500,
+    "ebit": 1400,
+    "mvEquity": 5200,
+    "sales": 2200,
+    "ta": 105000,
+    "tl": 96000,
+    "equity": 9000,
+    "pe": 5.5,
+    "pb": 0.6,
+    "ps": 1.8,
+    "pePct": 0.15,
+    "pbPct": 0.1,
+    "roe": 0.105,
+    "roic": 0.1,
+    "revGrowth": 0.03,
+    "profitGrowth": 0.04,
+    "businessNote": "同业+绿色金融特色",
+    "capacityNote": "—",
+    "govNote": "治理稳健",
+    "institutionNote": "配置型",
+    "riskNote": "地产/城投敞口偏大"
+  },
+  "technicals": {
+    "price": 20,
+    "ma20": 19.5,
+    "ma60": 19,
+    "ma250": 17.5,
+    "rsi14": 51,
+    "macdHist": 0.1,
+    "ret12m": 0.08,
+    "ret1m": 0.01,
+    "vol20d": 0.23,
+    "beta": 0.65
+  },
+  "news": [
+    {
+      "title": "兴业银行绿色信贷提速",
+      "content": "转型金融布局",
+      "pubDate": "2026-08-26",
+      "source": "证券时报",
+      "authorityWeight": 85
+    }
+  ]
+}

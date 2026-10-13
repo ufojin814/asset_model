@@ -1,0 +1,35 @@
+{
+  "_comment": "主题 → 标的映射。tickers 为 A 股代码示例，演示用种子数据见 data/stocks/{ticker}.json。真实数据通过 src/dataProvider.js 的 akshare/wind 适配器接入。",
+  "themes": [
+    {
+      "key": "optical_comm",
+      "name": "光通信",
+      "description": "AI 算力驱动的光模块/光器件赛道：800G/1.6T 光模块、CPO、光芯片。",
+      "tickers": ["300308.SZ", "300502.SZ", "300394.SZ", "002281.SZ"]
+    },
+    {
+      "key": "semiconductor",
+      "name": "芯片/半导体",
+      "description": "国产替代主线：晶圆代工、设备、材料、设计。",
+      "tickers": ["688981.SH", "002371.SZ", "603501.SH", "688041.SH"]
+    },
+    {
+      "key": "commercial_space",
+      "name": "商业航天",
+      "description": "卫星互联网、火箭发射、星载设备与地面终端。",
+      "tickers": ["600118.SH", "600879.SH", "603131.SH", "002025.SZ"]
+    },
+    {
+      "key": "gold",
+      "name": "黄金/贵金属",
+      "description": "避险与货币属性：金矿、贵金属冶炼。",
+      "tickers": ["600547.SH", "601899.SH", "600988.SH"]
+    },
+    {
+      "key": "bank",
+      "name": "银行",
+      "description": "高股息防御+顺周期：城商行/股份行/国有行。",
+      "tickers": ["600036.SH", "002142.SZ", "601838.SH", "601166.SH"]
+    }
+  ]
+}

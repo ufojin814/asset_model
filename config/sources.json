@@ -1,0 +1,10 @@
+{
+  "_comment": "数据源分级（S/A/B/C）。S级为唯一正式数据源；B/C级仅内部备用并需标注。",
+  "sources": [
+    { "id": "wind", "name": "Wind 金融终端/API", "level": "S", "scope": "财务/行情/估值/宏观/股东", "status": "需配置 config/wind.json（已gitignore）", "adapter": "wind" },
+    { "id": "akshare", "name": "akshare 开源财经数据", "level": "B", "scope": "A股行情/财务/新闻（技术面补充）", "status": "需 pip install akshare", "adapter": "akshare" },
+    { "id": "local", "name": "本地种子数据集（演示）", "level": "B", "scope": "data/stocks + data/macro 示例数据", "status": "开箱即用，清晰标注为演示数据", "adapter": "local" },
+    { "id": "pboc", "name": "中国人民银行 / 统计局", "level": "S", "scope": "货币政策/宏观指标", "status": "公开，人工/脚本采集", "adapter": "local" },
+    { "id": "lmx", "name": "Loughran-McDonald 金融情感词典", "level": "S", "scope": "消息面情绪打分", "status": "内置词典 src/sentiment.js", "adapter": "local" }
+  ]
+}

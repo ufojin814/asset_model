@@ -1,0 +1,62 @@
+{
+  "ticker": "002281.SZ",
+  "name": "光迅科技",
+  "theme": "光通信",
+  "industry": "光芯片/器件",
+  "_demo": true,
+  "_note": "演示种子数据（DEMO），非实时行情；真实数据经 src/dataProvider.js 接入 Wind/akshare。",
+  "fundamentals": {
+    "roa": 0.07,
+    "cfo": 0.08,
+    "roaDelta": 0.01,
+    "cfoMinusRoa": 0.01,
+    "levDelta": 0.01,
+    "curRatioDelta": 0.02,
+    "sharesDelta": 0,
+    "gmDelta": 0,
+    "atDelta": 0.08,
+    "wc": 50,
+    "re": 80,
+    "ebit": 18,
+    "mvEquity": 320,
+    "sales": 90,
+    "ta": 200,
+    "tl": 90,
+    "equity": 110,
+    "pe": 42,
+    "pb": 3.6,
+    "ps": 13,
+    "pePct": 0.6,
+    "pbPct": 0.5,
+    "roe": 0.16,
+    "roic": 0.13,
+    "revGrowth": 0.2,
+    "profitGrowth": 0.3,
+    "businessNote": "国产光芯片自主可控",
+    "capacityNote": "芯片自给率提升",
+    "govNote": "央企背景",
+    "institutionNote": "配置型持仓",
+    "riskNote": "增速平缓，盈利质量一般"
+  },
+  "technicals": {
+    "price": 38,
+    "ma20": 36,
+    "ma60": 34,
+    "ma250": 30,
+    "rsi14": 55,
+    "macdHist": 0.3,
+    "ret12m": 0.25,
+    "ret1m": 0.03,
+    "vol20d": 0.33,
+    "beta": 1.1
+  },
+  "news": [
+    {
+      "title": "光迅科技25G/100G光芯片量产",
+      "content": "国产替代进展顺利",
+      "pubDate": "2026-08-30",
+      "source": "证券时报",
+      "authorityWeight": 85
+    }
+  ]
+}

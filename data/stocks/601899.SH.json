@@ -1,0 +1,62 @@
+{
+  "ticker": "601899.SH",
+  "name": "紫金矿业",
+  "theme": "黄金/贵金属",
+  "industry": "铜金矿",
+  "_demo": true,
+  "_note": "演示种子数据（DEMO），非实时行情；真实数据经 src/dataProvider.js 接入 Wind/akshare。",
+  "fundamentals": {
+    "roa": 0.12,
+    "cfo": 0.14,
+    "roaDelta": 0.03,
+    "cfoMinusRoa": 0.02,
+    "levDelta": 0.01,
+    "curRatioDelta": 0.01,
+    "sharesDelta": 0.01,
+    "gmDelta": 0.02,
+    "atDelta": 0.15,
+    "wc": 200,
+    "re": 600,
+    "ebit": 300,
+    "mvEquity": 3800,
+    "sales": 3000,
+    "ta": 2500,
+    "tl": 1200,
+    "equity": 1300,
+    "pe": 18,
+    "pb": 3.4,
+    "ps": 1.8,
+    "pePct": 0.4,
+    "pbPct": 0.45,
+    "roe": 0.28,
+    "roic": 0.22,
+    "revGrowth": 0.18,
+    "profitGrowth": 0.3,
+    "businessNote": "全球矿业龙头，铜金双轮",
+    "capacityNote": "资源整合+扩产",
+    "govNote": "民企龙头",
+    "institutionNote": "机构重仓",
+    "riskNote": "海外运营/资源国风险"
+  },
+  "technicals": {
+    "price": 22,
+    "ma20": 21,
+    "ma60": 20,
+    "ma250": 17,
+    "rsi14": 60,
+    "macdHist": 0.4,
+    "ret12m": 0.35,
+    "ret1m": 0.03,
+    "vol20d": 0.32,
+    "beta": 1
+  },
+  "news": [
+    {
+      "title": "紫金矿业铜金产量双增",
+      "content": "战略资源自给率提升",
+      "pubDate": "2026-09-15",
+      "source": "证券时报",
+      "authorityWeight": 85
+    }
+  ]
+}

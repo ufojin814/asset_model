@@ -1,0 +1,39 @@
+{
+  "_comment": "宏观研判概率模型的因子权重矩阵与学术出处。约定：每个因子的 raw 信号语义为 +1=扩张/利好风险资产（估值因子 +1=贵；信用利差 +1=利差窄/风险偏好高；黄金实际利率 +1=实际利率低；通胀 +1=高通胀；地缘政治 +1=紧张度高；地产政策 +1=宽松）。资产权重含方向符号：正号=该 raw 信号利好本资产，负号=利空。倾斜度 T=Σ w_f·raw_f（权重归一化），再按 horizon 的 sigma 映射为概率分布（见 src/macroAnalyzer.js）。所有因子均有学术支撑。",
+  "horizons": {
+    "short": { "label": "短期", "windows": "≤3个月", "months": 3, "sigma": 0.35 },
+    "mid":   { "label": "中期", "windows": "3个月-1年", "months": 12, "sigma": 0.52 },
+    "long":  { "label": "长期", "windows": "1年以上", "months": 36, "sigma": 0.68 }
+  },
+  "assets": {
+    "stock": {
+      "label": "股票",
+      "factors": { "erp": 0.22, "valuation": -0.18, "yield_curve": 0.16, "growth": 0.15, "liquidity": 0.12, "credit_spread": 0.10, "tech": 0.04, "geopolitics": -0.03, "gold_real_rate": 0.03 }
+    },
+    "bond": {
+      "label": "债券",
+      "factors": { "yield_curve": -0.22, "liquidity": 0.20, "growth": -0.14, "credit_spread": 0.16, "inflation_real": -0.14, "erp": -0.14 }
+    },
+    "realestate": {
+      "label": "房地产",
+      "factors": { "liquidity": 0.34, "growth": 0.16, "re_policy": 0.30, "credit_spread": 0.10, "valuation": -0.10 }
+    },
+    "gold": {
+      "label": "黄金",
+      "factors": { "gold_real_rate": 0.34, "geopolitics": 0.28, "liquidity": 0.16, "inflation_real": 0.12, "credit_spread": 0.10 }
+    }
+  },
+  "factorDocs": {
+    "erp": { "label": "股债性价比（盈利收益率−无风险利率）", "citation": "Campbell & Shiller (1998) 估值与长期收益；Fed Model / Equity Risk Premium 框架", "dir": "ERP越高→股票相对债券越便宜" },
+    "valuation": { "label": "估值分位（席勒CAPE/整体PE历史分位）", "citation": "Campbell & Shiller (1998); Goyal et al. (2008) 估值对长期收益的预测力", "dir": "分位越高→未来回报越低（均值回归）" },
+    "yield_curve": { "label": "收益率曲线斜率（10Y−2Y）", "citation": "Estrella & Mishkin (1998) The Yield Curve as a Predictor of U.S. Recessions；BIS/ECB 多项复现", "dir": "倒挂（负值）→衰退概率上升，压制股票、利好利率债" },
+    "growth": { "label": "增长动能（PMI/GDP同比）", "citation": "Stock & Watson (1989) 景气扩散指数；PMI 作为宏观景气一致指标（ISM/统计局）", "dir": "动能越强→风险资产占优" },
+    "liquidity": { "label": "流动性（M2/社融同比、政策利率、存款准备金率）", "citation": "Bernanke (1983) 货币传导；Tobin q 与流动性驱动资产价格", "dir": "宽松→提升风险资产与债券价格" },
+    "credit_spread": { "label": "信用利差（高收益−国债）", "citation": "Merton (1974) 结构化信用模型；Gilchrist & Zakrajšek (2012) 信用利差含前瞻违约信息", "dir": "走阔=风险规避，压制股票/地产、利好利率债（避险）" },
+    "gold_real_rate": { "label": "实际利率（名义利率−通胀）对黄金", "citation": "Baur & Lucey (2010) 黄金的避险与对冲属性；实际利率为黄金主导变量", "dir": "实际利率越低→黄金越强势" },
+    "inflation_real": { "label": "通胀水平（CPI/PPI同比）", "citation": "Fama & Schwert (1977) 资产对通胀的对冲；通胀对债券实际收益为负", "dir": "通胀越高→债券实际收益越低（利空债）" },
+    "geopolitics": { "label": "地缘政治紧张度", "citation": "Baur & Lucey (2010) 危机期避险资金流向黄金；ETF/波动率作为代理", "dir": "紧张度越高→黄金避险买盘、股票承压" },
+    "tech": { "label": "科技突破（全要素生产率代理）", "citation": "Solow (1957) 技术进步为长期增长源泉；AI/半导体资本开支驱动TFP", "dir": "突破越强→长期股票盈利预期上修" },
+    "re_policy": { "label": "房地产政策（按揭利率/因城施策/去库存）", "citation": "IMF/央行宏观审慎研究；按揭利率与房价弹性（文献共识）", "dir": "宽松→托底房价，利好地产链条" }
+  }
+}

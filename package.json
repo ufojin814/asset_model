@@ -1,0 +1,15 @@
+{
+  "name": "asset-model",
+  "version": "1.0.0",
+  "description": "资产配置与股票配置研究平台 · 宏观研判 / 主题选股 / 深度研究（Serenity框架）· 零依赖原生 Node.js",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "smoke": "node tests/smoke.js"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "dependencies": {}
+}

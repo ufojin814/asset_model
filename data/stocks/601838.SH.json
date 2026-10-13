@@ -1,0 +1,62 @@
+{
+  "ticker": "601838.SH",
+  "name": "成都银行",
+  "theme": "银行",
+  "industry": "城商行",
+  "_demo": true,
+  "_note": "演示种子数据（DEMO），非实时行情；真实数据经 src/dataProvider.js 接入 Wind/akshare。",
+  "fundamentals": {
+    "roa": 0.013,
+    "cfo": 0.019,
+    "roaDelta": 0.001,
+    "cfoMinusRoa": 0.006,
+    "levDelta": 0.002,
+    "curRatioDelta": 0.01,
+    "sharesDelta": 0,
+    "gmDelta": 0,
+    "atDelta": 0.09,
+    "wc": 0,
+    "re": 500,
+    "ebit": 180,
+    "mvEquity": 800,
+    "sales": 250,
+    "ta": 12000,
+    "tl": 11000,
+    "equity": 1100,
+    "pe": 5.8,
+    "pb": 0.85,
+    "ps": 2.2,
+    "pePct": 0.18,
+    "pbPct": 0.12,
+    "roe": 0.17,
+    "roic": 0.15,
+    "revGrowth": 0.1,
+    "profitGrowth": 0.12,
+    "businessNote": "成渝经济圈城商行，高成长",
+    "capacityNote": "—",
+    "govNote": "区域龙头",
+    "institutionNote": "机构增持",
+    "riskNote": "城投敞口"
+  },
+  "technicals": {
+    "price": 18,
+    "ma20": 17.5,
+    "ma60": 16.8,
+    "ma250": 15,
+    "rsi14": 53,
+    "macdHist": 0.15,
+    "ret12m": 0.2,
+    "ret1m": 0.03,
+    "vol20d": 0.26,
+    "beta": 0.8
+  },
+  "news": [
+    {
+      "title": "成都银行受益于成渝双城",
+      "content": "区域信贷需求旺盛",
+      "pubDate": "2026-09-05",
+      "source": "上证报",
+      "authorityWeight": 80
+    }
+  ]
+}

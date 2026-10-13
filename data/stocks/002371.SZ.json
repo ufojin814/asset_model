@@ -1,0 +1,62 @@
+{
+  "ticker": "002371.SZ",
+  "name": "北方华创",
+  "theme": "芯片/半导体",
+  "industry": "半导体设备",
+  "_demo": true,
+  "_note": "演示种子数据（DEMO），非实时行情；真实数据经 src/dataProvider.js 接入 Wind/akshare。",
+  "fundamentals": {
+    "roa": 0.1,
+    "cfo": 0.08,
+    "roaDelta": 0.03,
+    "cfoMinusRoa": -0.02,
+    "levDelta": 0.01,
+    "curRatioDelta": 0.03,
+    "sharesDelta": 0,
+    "gmDelta": 0.02,
+    "atDelta": 0.3,
+    "wc": 200,
+    "re": 300,
+    "ebit": 70,
+    "mvEquity": 1800,
+    "sales": 280,
+    "ta": 700,
+    "tl": 350,
+    "equity": 350,
+    "pe": 42,
+    "pb": 9,
+    "ps": 18,
+    "pePct": 0.6,
+    "pbPct": 0.7,
+    "roe": 0.32,
+    "roic": 0.25,
+    "revGrowth": 0.4,
+    "profitGrowth": 0.5,
+    "businessNote": "半导体设备平台龙头",
+    "capacityNote": "订单饱满",
+    "govNote": "国产替代核心",
+    "institutionNote": "机构重仓",
+    "riskNote": "估值不低"
+  },
+  "technicals": {
+    "price": 380,
+    "ma20": 360,
+    "ma60": 330,
+    "ma250": 280,
+    "rsi14": 60,
+    "macdHist": 2,
+    "ret12m": 0.35,
+    "ret1m": 0.05,
+    "vol20d": 0.36,
+    "beta": 1.3
+  },
+  "news": [
+    {
+      "title": "北方华创获大客户重复订单",
+      "content": "刻蚀/薄膜设备份额提升",
+      "pubDate": "2026-09-12",
+      "source": "证券时报",
+      "authorityWeight": 85
+    }
+  ]
+}

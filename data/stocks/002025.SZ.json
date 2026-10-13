@@ -1,0 +1,62 @@
+{
+  "ticker": "002025.SZ",
+  "name": "航天电器",
+  "theme": "商业航天",
+  "industry": "连接器",
+  "_demo": true,
+  "_note": "演示种子数据（DEMO），非实时行情；真实数据经 src/dataProvider.js 接入 Wind/akshare。",
+  "fundamentals": {
+    "roa": 0.08,
+    "cfo": 0.07,
+    "roaDelta": 0.02,
+    "cfoMinusRoa": -0.01,
+    "levDelta": 0,
+    "curRatioDelta": 0.02,
+    "sharesDelta": 0,
+    "gmDelta": 0.01,
+    "atDelta": 0.12,
+    "wc": 50,
+    "re": 80,
+    "ebit": 20,
+    "mvEquity": 400,
+    "sales": 120,
+    "ta": 280,
+    "tl": 120,
+    "equity": 160,
+    "pe": 48,
+    "pb": 5,
+    "ps": 12,
+    "pePct": 0.5,
+    "pbPct": 0.5,
+    "roe": 0.2,
+    "roic": 0.16,
+    "revGrowth": 0.18,
+    "profitGrowth": 0.2,
+    "businessNote": "高端连接器核心供",
+    "capacityNote": "航天/弹载配套",
+    "govNote": "航天科工体系",
+    "institutionNote": "机构持有",
+    "riskNote": "军品订单节奏波动"
+  },
+  "technicals": {
+    "price": 62,
+    "ma20": 58,
+    "ma60": 54,
+    "ma250": 50,
+    "rsi14": 55,
+    "macdHist": 0.8,
+    "ret12m": 0.2,
+    "ret1m": 0.03,
+    "vol20d": 0.37,
+    "beta": 1.25
+  },
+  "news": [
+    {
+      "title": "航天电器弹载连接器放量",
+      "content": "装备现代化拉动",
+      "pubDate": "2026-08-25",
+      "source": "上证报",
+      "authorityWeight": 80
+    }
+  ]
+}

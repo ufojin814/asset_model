@@ -1,0 +1,62 @@
+{
+  "ticker": "002142.SZ",
+  "name": "宁波银行",
+  "theme": "银行",
+  "industry": "城商行",
+  "_demo": true,
+  "_note": "演示种子数据（DEMO），非实时行情；真实数据经 src/dataProvider.js 接入 Wind/akshare。",
+  "fundamentals": {
+    "roa": 0.012,
+    "cfo": 0.018,
+    "roaDelta": 0.001,
+    "cfoMinusRoa": 0.006,
+    "levDelta": 0.003,
+    "curRatioDelta": 0.01,
+    "sharesDelta": 0,
+    "gmDelta": 0,
+    "atDelta": 0.08,
+    "wc": 0,
+    "re": 900,
+    "ebit": 300,
+    "mvEquity": 1800,
+    "sales": 600,
+    "ta": 28000,
+    "tl": 25500,
+    "equity": 2500,
+    "pe": 6.5,
+    "pb": 0.95,
+    "ps": 2.6,
+    "pePct": 0.2,
+    "pbPct": 0.15,
+    "roe": 0.15,
+    "roic": 0.14,
+    "revGrowth": 0.08,
+    "profitGrowth": 0.1,
+    "businessNote": "城商行标杆，风控扎实",
+    "capacityNote": "—",
+    "govNote": "治理优秀",
+    "institutionNote": "机构持有",
+    "riskNote": "区域经济波动"
+  },
+  "technicals": {
+    "price": 28,
+    "ma20": 27,
+    "ma60": 26,
+    "ma250": 24,
+    "rsi14": 52,
+    "macdHist": 0.2,
+    "ret12m": 0.12,
+    "ret1m": 0.02,
+    "vol20d": 0.24,
+    "beta": 0.75
+  },
+  "news": [
+    {
+      "title": "宁波银行不良率低位",
+      "content": "区域 antigen 优质客户基础",
+      "pubDate": "2026-08-28",
+      "source": "财联社",
+      "authorityWeight": 75
+    }
+  ]
+}

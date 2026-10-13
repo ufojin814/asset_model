@@ -1,0 +1,54 @@
+{
+  "entries": [
+    {
+      "id": "deep_600547.SH_2026-10-13T11-20-14",
+      "type": "deep",
+      "ticker": "600547.SH",
+      "title": "深度研究 山东黄金",
+      "file": "deep_600547.SH_2026-10-13T11-20-14.md",
+      "timestamp": "2026-10-13 11:20:14",
+      "date": "2026-10-13",
+      "summary": "> 研究框架：Serenity 投资研究框架 × Loop Engineering 对抗式迭代 ｜ 数据戳：2026-10-13 03:20:14 ｜ 标的戳：600547.SH"
+    },
+    {
+      "id": "macro_macro_2026-10-13T11-20-14",
+      "type": "macro",
+      "ticker": "macro",
+      "title": "宏观研判 2026-10-13",
+      "file": "macro_macro_2026-10-13T11-20-14.md",
+      "timestamp": "2026-10-13 11:20:14",
+      "date": "2026-10-13",
+      "summary": "> 生成时间：2026-10-13 11:20:14 ｜ 框架：多因子加权信号 + 概率化解释（潜变量正态模型）"
+    },
+    {
+      "id": "selection_optical_comm_2026-10-13T11-19-26",
+      "type": "selection",
+      "ticker": "optical_comm",
+      "title": "选股 光通信",
+      "file": "selection_optical_comm_2026-10-13T11-19-26.md",
+      "timestamp": "2026-10-13 11:19:26",
+      "date": "2026-10-13",
+      "summary": "> 生成时间：2026-10-13 11:19:26 ｜ 权重：基本面0.4/技术面0.3/消息面0.3"
+    },
+    {
+      "id": "deep_300308.SZ_2026-10-13T11-19-08",
+      "type": "deep",
+      "ticker": "300308.SZ",
+      "title": "深度研究 中际旭创",
+      "file": "deep_300308.SZ_2026-10-13T11-19-08.md",
+      "timestamp": "2026-10-13 11:19:08",
+      "date": "2026-10-13",
+      "summary": "> 研究框架：Serenity 投资研究框架 × Loop Engineering 对抗式迭代 ｜ 数据戳：2026-10-13 03:19:08 ｜ 标的戳：300308.SZ"
+    },
+    {
+      "id": "deep_300308.SZ_2026-10-13T11-15-51",
+      "type": "deep",
+      "ticker": "300308.SZ",
+      "title": "深度研究 中际旭创",
+      "file": "deep_300308.SZ_2026-10-13T11-15-51.md",
+      "timestamp": "2026-10-13 11:15:51",
+      "date": "2026-10-13",
+      "summary": "> 研究框架：Serenity 投资研究框架 × Loop Engineering 对抗式迭代 ｜ 数据戳：2026-10-13 03:15:51 ｜ 标的戳：300308.SZ"
+    }
+  ]
+}

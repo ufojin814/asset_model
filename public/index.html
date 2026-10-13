@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>资产配置与股票配置研究平台 · Asset Model</title>
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">📊 资产配置与股票配置研究平台</div>
+  <div class="sub">宏观研判 · 主题选股 · 深度研究（Serenity 框架）· 零依赖</div>
+</header>
+
+<nav class="tabs">
+  <button class="tab active" data-tab="macro">① 宏观研判</button>
+  <button class="tab" data-tab="select">② 主题选股</button>
+  <button class="tab" data-tab="deep">③ 深度研究</button>
+  <button class="tab" data-tab="kb">④ 研究资料库</button>
+</nav>
+
+<main>
+  <!-- 宏观研判 -->
+  <section class="panel active" id="tab-macro">
+    <div class="card">
+      <h2>宏观研判板块</h2>
+      <p class="hint">基于增长/流动性/货币政策/地缘政治/科技突破等现状，研判股、债、房地产、黄金在
+        <b>短期(≤3月)</b>、<b>中期(3月-1年)</b>、<b>长期(1年以上)</b> 的概率走势。概率由多因子加权信号 + 潜变量正态模型推导，因子均有学术支撑。</p>
+      <button class="btn primary" id="btn-macro">运行宏观研判</button>
+      <span class="dp-badge" id="macro-dp"></span>
+    </div>
+    <div id="macro-result"></div>
+  </section>
+
+  <!-- 主题选股 -->
+  <section class="panel" id="tab-select">
+    <div class="card">
+      <h2>主题选股板块</h2>
+      <p class="hint">指定研究主题 → 筛选对应标的 → 三维评分（基本面 Piotroski/Altman、技术面动量/低波、消息面 Loughran-McDonald）→ 统一加权 → 每主题 Top3，含特征雷达图与复制清单。</p>
+      <div class="row">
+        <select id="theme-select"></select>
+        <input type="number" id="topn" value="3" min="1" max="10" style="width:70px" title="取前N" />
+        <button class="btn primary" id="btn-select">运行选股</button>
+      </div>
+    </div>
+    <div id="select-result"></div>
+  </section>
+
+  <!-- 深度研究 -->
+  <section class="panel" id="tab-deep">
+    <div class="card">
+      <h2>股票深度研究板块（Serenity 框架）</h2>
+      <p class="hint">严格遵循「白毛股神 serenity」九角色对抗式研究框架：宏观定位→行业→八维度个股→基本面证伪→五情景估值→量化风控→组合配置→终稿。输入标的代码运行。</p>
+      <div class="row">
+        <input id="ticker-input" placeholder="请输入标的代码，如 300308.SZ" style="width:240px" />
+        <button class="btn primary" id="btn-deep">运行深度研究</button>
+      </div>
+      <div id="deep-quick"></div>
+    </div>
+    <div id="deep-result"></div>
+  </section>
+
+  <!-- 研究资料库 -->
+  <section class="panel" id="tab-kb">
+    <div class="card">
+      <h2>研究资料库</h2>
+      <p class="hint">所有研究报告按 <b>类型_标的_时间戳</b> 落盘，可回溯检索。点击查看正文。</p>
+      <button class="btn" id="btn-kb">刷新资料库</button>
+      <span id="kb-stats" class="dp-badge"></span>
+    </div>
+    <div id="kb-list"></div>
+    <div id="kb-view"></div>
+  </section>
+</main>
+
+<footer class="foot">仅供研究使用 · 所有结论须以可核验数据支撑，严禁虚构 · Serenity 投资研究框架</footer>
+<script src="/js/app.js"></script>
+</body>
+</html>

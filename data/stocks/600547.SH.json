@@ -1,0 +1,69 @@
+{
+  "ticker": "600547.SH",
+  "name": "山东黄金",
+  "theme": "黄金/贵金属",
+  "industry": "金矿",
+  "_demo": true,
+  "_note": "演示种子数据（DEMO），非实时行情；真实数据经 src/dataProvider.js 接入 Wind/akshare。",
+  "fundamentals": {
+    "roa": 0.09,
+    "cfo": 0.11,
+    "roaDelta": 0.03,
+    "cfoMinusRoa": 0.02,
+    "levDelta": -0.02,
+    "curRatioDelta": 0.03,
+    "sharesDelta": 0.01,
+    "gmDelta": 0.02,
+    "atDelta": 0.1,
+    "wc": 80,
+    "re": 300,
+    "ebit": 90,
+    "mvEquity": 1500,
+    "sales": 700,
+    "ta": 900,
+    "tl": 400,
+    "equity": 500,
+    "pe": 28,
+    "pb": 4.2,
+    "ps": 3.6,
+    "pePct": 0.55,
+    "pbPct": 0.5,
+    "roe": 0.22,
+    "roic": 0.18,
+    "revGrowth": 0.25,
+    "profitGrowth": 0.4,
+    "businessNote": "国内金矿龙头，资源量丰富",
+    "capacityNote": "矿产金产量提升",
+    "govNote": "国企",
+    "institutionNote": "避险配置",
+    "riskNote": "金价波动"
+  },
+  "technicals": {
+    "price": 38,
+    "ma20": 36,
+    "ma60": 34,
+    "ma250": 30,
+    "rsi14": 58,
+    "macdHist": 0.6,
+    "ret12m": 0.3,
+    "ret1m": 0.04,
+    "vol20d": 0.3,
+    "beta": 0.9
+  },
+  "news": [
+    {
+      "title": "金价突破历史新高",
+      "content": "实际利率下行+避险需求推动",
+      "pubDate": "2026-09-20",
+      "source": "路透",
+      "authorityWeight": 75
+    },
+    {
+      "title": "央行持续购金",
+      "content": "全球央行增持黄金储备",
+      "pubDate": "2026-09-22",
+      "source": "新华财经",
+      "authorityWeight": 85
+    }
+  ]
+}

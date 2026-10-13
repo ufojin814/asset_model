@@ -1,0 +1,21 @@
+{
+  "_demo": true,
+  "_note": "演示种子数据（DEMO），非实时行情；真实数据经 src/dataProvider.js 接入 Wind/akshare。",
+  "pmi": 50.2,
+  "gdpYoY": 4.8,
+  "m2YoY": 7,
+  "socialFinancingYoY": 8.5,
+  "policyRate": 1.5,
+  "reserveRatio": 7,
+  "cpiYoY": 0.3,
+  "ppiYoY": -1.5,
+  "y10": 2.1,
+  "y2": 1.6,
+  "earningsYield": 0.045,
+  "valuationPercentile": 0.55,
+  "creditSpread": 280,
+  "geoIndex": 55,
+  "techIndex": 62,
+  "rePolicyEasing": 60,
+  "rePriceYoY": -3
+}

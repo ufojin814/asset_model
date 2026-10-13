@@ -1,0 +1,62 @@
+{
+  "ticker": "600879.SH",
+  "name": "航天电子",
+  "theme": "商业航天",
+  "industry": "航天电子",
+  "_demo": true,
+  "_note": "演示种子数据（DEMO），非实时行情；真实数据经 src/dataProvider.js 接入 Wind/akshare。",
+  "fundamentals": {
+    "roa": 0.04,
+    "cfo": 0.03,
+    "roaDelta": 0.01,
+    "cfoMinusRoa": -0.01,
+    "levDelta": 0.01,
+    "curRatioDelta": 0.01,
+    "sharesDelta": 0,
+    "gmDelta": 0,
+    "atDelta": 0.06,
+    "wc": 60,
+    "re": 110,
+    "ebit": 18,
+    "mvEquity": 380,
+    "sales": 200,
+    "ta": 500,
+    "tl": 250,
+    "equity": 250,
+    "pe": 55,
+    "pb": 2.6,
+    "ps": 3.5,
+    "pePct": 0.5,
+    "pbPct": 0.35,
+    "roe": 0.1,
+    "roic": 0.08,
+    "revGrowth": 0.12,
+    "profitGrowth": 0.1,
+    "businessNote": "航天电子配套核心",
+    "capacityNote": "火箭/卫星配套",
+    "govNote": "央企",
+    "institutionNote": "配置型",
+    "riskNote": "盈利弹性有限"
+  },
+  "technicals": {
+    "price": 11,
+    "ma20": 10.5,
+    "ma60": 10,
+    "ma250": 9,
+    "rsi14": 53,
+    "macdHist": 0.1,
+    "ret12m": 0.12,
+    "ret1m": 0.02,
+    "vol20d": 0.36,
+    "beta": 1.2
+  },
+  "news": [
+    {
+      "title": "航天电子配套新一代运载火箭",
+      "content": "批产任务充足",
+      "pubDate": "2026-08-28",
+      "source": "证券时报",
+      "authorityWeight": 85
+    }
+  ]
+}

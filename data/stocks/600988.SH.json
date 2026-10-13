@@ -1,0 +1,62 @@
+{
+  "ticker": "600988.SH",
+  "name": "赤峰黄金",
+  "theme": "黄金/贵金属",
+  "industry": "金矿",
+  "_demo": true,
+  "_note": "演示种子数据（DEMO），非实时行情；真实数据经 src/dataProvider.js 接入 Wind/akshare。",
+  "fundamentals": {
+    "roa": 0.1,
+    "cfo": 0.09,
+    "roaDelta": 0.02,
+    "cfoMinusRoa": -0.01,
+    "levDelta": -0.01,
+    "curRatioDelta": 0.02,
+    "sharesDelta": 0.03,
+    "gmDelta": 0.01,
+    "atDelta": 0.12,
+    "wc": 40,
+    "re": 90,
+    "ebit": 40,
+    "mvEquity": 600,
+    "sales": 250,
+    "ta": 400,
+    "tl": 200,
+    "equity": 200,
+    "pe": 32,
+    "pb": 5,
+    "ps": 4,
+    "pePct": 0.6,
+    "pbPct": 0.55,
+    "roe": 0.24,
+    "roic": 0.18,
+    "revGrowth": 0.2,
+    "profitGrowth": 0.35,
+    "businessNote": "黄金弹性标的",
+    "capacityNote": "海外矿山放量",
+    "govNote": "民企",
+    "institutionNote": "主题配置",
+    "riskNote": "产量兑现/汇率风险"
+  },
+  "technicals": {
+    "price": 28,
+    "ma20": 26,
+    "ma60": 24,
+    "ma250": 21,
+    "rsi14": 59,
+    "macdHist": 0.7,
+    "ret12m": 0.33,
+    "ret1m": 0.05,
+    "vol20d": 0.4,
+    "beta": 1.1
+  },
+  "news": [
+    {
+      "title": "赤峰黄金海外矿山产量释放",
+      "content": "金价高位增厚利润",
+      "pubDate": "2026-09-18",
+      "source": "财联社",
+      "authorityWeight": 75
+    }
+  ]
+}

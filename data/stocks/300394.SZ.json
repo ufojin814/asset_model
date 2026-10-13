@@ -1,0 +1,62 @@
+{
+  "ticker": "300394.SZ",
+  "name": "天孚通信",
+  "theme": "光通信",
+  "industry": "光器件",
+  "_demo": true,
+  "_note": "演示种子数据（DEMO），非实时行情；真实数据经 src/dataProvider.js 接入 Wind/akshare。",
+  "fundamentals": {
+    "roa": 0.16,
+    "cfo": 0.18,
+    "roaDelta": 0.04,
+    "cfoMinusRoa": 0.02,
+    "levDelta": -0.03,
+    "curRatioDelta": 0.12,
+    "sharesDelta": 0,
+    "gmDelta": 0.03,
+    "atDelta": 0.22,
+    "wc": 60,
+    "re": 90,
+    "ebit": 24,
+    "mvEquity": 480,
+    "sales": 60,
+    "ta": 140,
+    "tl": 40,
+    "equity": 100,
+    "pe": 45,
+    "pb": 14,
+    "ps": 36,
+    "pePct": 0.78,
+    "pbPct": 0.8,
+    "roe": 0.46,
+    "roic": 0.36,
+    "revGrowth": 0.8,
+    "profitGrowth": 0.95,
+    "businessNote": "光器件平台型龙头",
+    "capacityNote": "无源/有源器件双轮",
+    "govNote": "毛利率行业领先",
+    "institutionNote": "机构稳定持有",
+    "riskNote": "估值高位"
+  },
+  "technicals": {
+    "price": 118,
+    "ma20": 110,
+    "ma60": 96,
+    "ma250": 70,
+    "rsi14": 62,
+    "macdHist": 1,
+    "ret12m": 0.6,
+    "ret1m": 0.06,
+    "vol20d": 0.38,
+    "beta": 1.3
+  },
+  "news": [
+    {
+      "title": "天孚通信受益1.6T光引擎",
+      "content": "公司光引擎产品切入海外供应链",
+      "pubDate": "2026-09-18",
+      "source": "上证报",
+      "authorityWeight": 80
+    }
+  ]
+}

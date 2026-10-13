@@ -1,0 +1,69 @@
+{
+  "ticker": "600036.SH",
+  "name": "招商银行",
+  "theme": "银行",
+  "industry": "股份行",
+  "_demo": true,
+  "_note": "演示种子数据（DEMO），非实时行情；真实数据经 src/dataProvider.js 接入 Wind/akshare。",
+  "fundamentals": {
+    "roa": 0.013,
+    "cfo": 0.02,
+    "roaDelta": 0.001,
+    "cfoMinusRoa": 0.007,
+    "levDelta": 0.005,
+    "curRatioDelta": 0.01,
+    "sharesDelta": 0,
+    "gmDelta": 0,
+    "atDelta": 0.06,
+    "wc": 0,
+    "re": 4000,
+    "ebit": 1800,
+    "mvEquity": 9500,
+    "sales": 3500,
+    "ta": 110000,
+    "tl": 100000,
+    "equity": 9500,
+    "pe": 7.2,
+    "pb": 1,
+    "ps": 2.4,
+    "pePct": 0.25,
+    "pbPct": 0.2,
+    "roe": 0.145,
+    "roic": 0.13,
+    "revGrowth": 0.05,
+    "profitGrowth": 0.06,
+    "businessNote": "零售银行标杆，资产质量优",
+    "capacityNote": "—",
+    "govNote": "治理领先",
+    "institutionNote": "机构+北向核心仓",
+    "riskNote": "息差下行，地产风险敞口"
+  },
+  "technicals": {
+    "price": 42,
+    "ma20": 41,
+    "ma60": 40,
+    "ma250": 36,
+    "rsi14": 54,
+    "macdHist": 0.3,
+    "ret12m": 0.15,
+    "ret1m": 0.02,
+    "vol20d": 0.22,
+    "beta": 0.7
+  },
+  "news": [
+    {
+      "title": "招行中收企稳回升",
+      "content": "财富管理手续费边际改善",
+      "pubDate": "2026-08-30",
+      "source": "证券时报",
+      "authorityWeight": 85
+    },
+    {
+      "title": "招行拨备覆盖率维持高位",
+      "content": "资产质量稳健",
+      "pubDate": "2026-09-01",
+      "source": "上证报",
+      "authorityWeight": 80
+    }
+  ]
+}

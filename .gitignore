@@ -1,0 +1,16 @@
+# 依赖与缓存
+node_modules/
+data/cache/
+*.log
+.DS_Store
+Thumbs.db
+
+# 本地密钥 / 私有配置（严禁入库）
+config/hermes.json
+config/wind.json
+config/*.local.json
+.env
+.secret
+
+# 运行时临时
+tmp/

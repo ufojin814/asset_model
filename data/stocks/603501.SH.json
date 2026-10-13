@@ -1,0 +1,62 @@
+{
+  "ticker": "603501.SH",
+  "name": "韦尔股份",
+  "theme": "芯片/半导体",
+  "industry": "CIS/设计",
+  "_demo": true,
+  "_note": "演示种子数据（DEMO），非实时行情；真实数据经 src/dataProvider.js 接入 Wind/akshare。",
+  "fundamentals": {
+    "roa": 0.11,
+    "cfo": 0.13,
+    "roaDelta": 0.04,
+    "cfoMinusRoa": 0.02,
+    "levDelta": -0.02,
+    "curRatioDelta": 0.05,
+    "sharesDelta": 0,
+    "gmDelta": 0.03,
+    "atDelta": 0.18,
+    "wc": 150,
+    "re": 200,
+    "ebit": 55,
+    "mvEquity": 1400,
+    "sales": 260,
+    "ta": 500,
+    "tl": 180,
+    "equity": 320,
+    "pe": 48,
+    "pb": 7,
+    "ps": 14,
+    "pePct": 0.65,
+    "pbPct": 0.6,
+    "roe": 0.34,
+    "roic": 0.28,
+    "revGrowth": 0.3,
+    "profitGrowth": 0.6,
+    "businessNote": "CIS图像传感器龙头",
+    "capacityNote": "车载/安防放量",
+    "govNote": "治理良好",
+    "institutionNote": "机构持有",
+    "riskNote": "消费电子周期波动"
+  },
+  "technicals": {
+    "price": 130,
+    "ma20": 122,
+    "ma60": 110,
+    "ma250": 95,
+    "rsi14": 58,
+    "macdHist": 1.2,
+    "ret12m": 0.4,
+    "ret1m": 0.04,
+    "vol20d": 0.37,
+    "beta": 1.25
+  },
+  "news": [
+    {
+      "title": "韦尔股份车载CIS出货高增",
+      "content": "智能驾驶拉动需求",
+      "pubDate": "2026-09-08",
+      "source": "上海证券报",
+      "authorityWeight": 80
+    }
+  ]
+}

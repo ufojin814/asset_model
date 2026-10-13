@@ -1,0 +1,62 @@
+{
+  "ticker": "603131.SH",
+  "name": "上海沪工",
+  "theme": "商业航天",
+  "industry": "焊接/航天部件",
+  "_demo": true,
+  "_note": "演示种子数据（DEMO），非实时行情；真实数据经 src/dataProvider.js 接入 Wind/akshare。",
+  "fundamentals": {
+    "roa": 0.05,
+    "cfo": 0.04,
+    "roaDelta": 0.02,
+    "cfoMinusRoa": -0.01,
+    "levDelta": 0,
+    "curRatioDelta": 0.02,
+    "sharesDelta": 0.02,
+    "gmDelta": 0.01,
+    "atDelta": 0.1,
+    "wc": 20,
+    "re": 30,
+    "ebit": 6,
+    "mvEquity": 90,
+    "sales": 40,
+    "ta": 120,
+    "tl": 60,
+    "equity": 60,
+    "pe": 60,
+    "pb": 3,
+    "ps": 7,
+    "pePct": 0.55,
+    "pbPct": 0.45,
+    "roe": 0.12,
+    "roic": 0.1,
+    "revGrowth": 0.1,
+    "profitGrowth": 0.15,
+    "businessNote": "焊接设备+卫星部件",
+    "capacityNote": "卫星制造布局",
+    "govNote": "民营",
+    "institutionNote": "主题博弈",
+    "riskNote": "主业承压，航天贡献小"
+  },
+  "technicals": {
+    "price": 24,
+    "ma20": 22,
+    "ma60": 21,
+    "ma250": 19,
+    "rsi14": 57,
+    "macdHist": 0.5,
+    "ret12m": 0.22,
+    "ret1m": 0.04,
+    "vol20d": 0.45,
+    "beta": 1.5
+  },
+  "news": [
+    {
+      "title": "上海沪工卫星业务落地",
+      "content": "商业航天主题催化",
+      "pubDate": "2026-09-02",
+      "source": "同花顺",
+      "authorityWeight": 55
+    }
+  ]
+}
