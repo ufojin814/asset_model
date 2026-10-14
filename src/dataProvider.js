@@ -269,13 +269,14 @@ function extractWindCode(obj) {
   }
   for (const raw of candidates) {
     const s = String(raw).trim().toUpperCase();
-    const m = s.match(/(\d{6})\.?(SH|SZ)?/i);
+    const m = s.match(/(\d{6})\.?(SH|SZ|BJ)?/i);
     if (!m) continue;
     const num = m[1];
     let ex = (m[2] || '').toUpperCase();
     if (!ex) {
       if (num.startsWith('6')) ex = 'SH';           // 沪市
       else if (num.startsWith('0') || num.startsWith('3')) ex = 'SZ'; // 深市
+      else if (num.startsWith('8') || num.startsWith('4') || num.startsWith('9')) ex = 'BJ'; // 北交所
       else ex = 'SH';
     }
     return `${num}.${ex}`;
@@ -289,6 +290,44 @@ const windAdapter = {
   getMacroSnapshot: localAdapter.getMacroSnapshot,
   getStock: fetchWindStock,
 };
+
+// ---------- 经 Wind 把「概念/行业短语」反查为标的池（自然语言主题入口兜底） ----------
+// 用于 NL 主题入口输入了 themes.json 未收录的概念（如「养老」「低空经济」）时，
+// 用 search_stocks（NL 筛选）反查 A 股标的池，再交给 stockSelector 评分排序。
+async function searchWindStocks(question, limit = 8) {
+  if (!WIND_SKILL_DIR || !WIND_API_KEY_VAL) return null;
+  const r = await callWindCli('stock_data', 'search_stocks', { question });
+  if (!r) return null;
+  // 兼容「没找到数据」等无表返回
+  let outer;
+  try { outer = JSON.parse(r.trim()); }
+  catch (e) {
+    if (/没找到数据|无数据|未找到|没有找到/.test(r)) return [];
+    const lines = r.trim().split('\n').map(l => l.trim()).filter(Boolean);
+    try { outer = JSON.parse(lines[lines.length - 1]); } catch (e2) { return []; }
+  }
+  if (!outer || outer.isError) return [];
+  let inner;
+  try { inner = JSON.parse(outer.content[0].text); } catch (e) { return []; }
+  let tables = [];
+  if (inner.data && Array.isArray(inner.data.data)) tables = inner.data.data;
+  else if (inner.data && Array.isArray(inner.data.columns)) tables = [inner.data];
+  else if (Array.isArray(inner.data)) tables = inner.data;
+  if (!tables.length) return [];
+  const tbl = tables[0];
+  const cols = tbl.columns || [];
+  const ci = cols.findIndex(c => { const n = String(c.name || '').toLowerCase(); return n.includes('代码') || n.includes('code'); });
+  if (ci < 0) return [];
+  const out = [];
+  for (const row of (tbl.rows || [])) {
+    const v = row[ci];
+    if (!v) continue;
+    const code = extractWindCode({ 'Wind代码': String(v) });
+    if (code && !out.includes(code)) out.push(code);
+    if (out.length >= limit) break;
+  }
+  return out;
+}
 
 // ---------- akshare 适配器（Python 开源，兜底） ----------
 function fetchAkshareStock(ticker) {
@@ -364,4 +403,4 @@ function getProvider(type = config.dataProvider) {
   return registry[type] || localAdapter;
 }
 
-module.exports = { getProvider, localAdapter, windAdapter, akshareAdapter, autoAdapter, resolveTheme, resolveWindCode };
+module.exports = { getProvider, localAdapter, windAdapter, akshareAdapter, autoAdapter, resolveTheme, resolveWindCode, searchWindStocks };

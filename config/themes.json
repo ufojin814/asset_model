@@ -1,5 +1,5 @@
 {
-  "_comment": "主题 → 标的映射。tickers 为 A 股代码示例，演示用种子数据见 data/stocks/{ticker}.json。真实数据通过 src/dataProvider.js 的 akshare/wind 适配器接入。",
+  "_comment": "主题 → 标的映射。tickers 为 A 股代码示例（真实标的，数据经 src/dataProvider.js 的 Wind/akshare 适配器接入）。NL 主题入口若输入了本表未收录的概念（如「养老」「低空经济」），会在 server.js handleNLThemes 中经 Wind search_stocks 动态反查标的池。",
   "themes": [
     {
       "key": "optical_comm",
@@ -30,6 +30,36 @@
       "name": "银行",
       "description": "高股息防御+顺周期：城商行/股份行/国有行。",
       "tickers": ["600036.SH", "002142.SZ", "601838.SH", "601166.SH"]
+    },
+    {
+      "key": "medical",
+      "name": "医疗/医药",
+      "description": "老龄化与创新驱动：中药、化学制药、医疗器械、医疗服务。",
+      "tickers": ["600085.SH", "600062.SH", "002223.SZ", "688192.SH", "002382.SZ"]
+    },
+    {
+      "key": "pension",
+      "name": "养老/银发经济",
+      "description": "银发经济：医疗设备、眼科齿科、慢病用药、养老运营。",
+      "tickers": ["002223.SZ", "300015.SZ", "600867.SH", "002162.SZ", "002381.SZ"]
+    },
+    {
+      "key": "power",
+      "name": "电力",
+      "description": "能源安全与绿电：水电、核电、新能源发电、火电转型。",
+      "tickers": ["600900.SH", "600025.SH", "600905.SH", "600795.SH", "601985.SH"]
+    },
+    {
+      "key": "ai",
+      "name": "人工智能",
+      "description": "AI 算力与应用：通信算力、智能驾驶、AI 语料、芯片。",
+      "tickers": ["000063.SZ", "002920.SZ", "688787.SH", "002049.SZ", "002230.SZ"]
+    },
+    {
+      "key": "newenergy",
+      "name": "新能源",
+      "description": "能源转型：光伏、锂电、储能、电动车产业链。",
+      "tickers": ["300750.SZ", "002594.SZ", "601012.SH", "300014.SZ", "688599.SH"]
     }
   ]
 }

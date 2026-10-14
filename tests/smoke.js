@@ -61,6 +61,12 @@ const { heuristicParse, getAliasMap } = require('../src/nlIntake');
   const p3 = heuristicParse('随便聊两句');
   ok('NL空意图返回空结构(不抛错)', Array.isArray(p3.themes) && Array.isArray(p3.tickers));
 
+  // 主题识别回归：用户原话「芯片，养老，医疗，电力，ai，银行」（迭代五修复：此前只识别到芯片/银行/光通信）
+  const p4 = heuristicParse('芯片，养老，医疗，电力，ai，银行');
+  const want = ['semiconductor', 'pension', 'medical', 'power', 'ai', 'bank'];
+  ok('NL识别全部 6 个概念板块(不丢不增)', want.every(k => p4.themes.includes(k)) && p4.themes.length === 6);
+  ok('NL未误加 光通信(optical_comm)', !p4.themes.includes('optical_comm'));
+
   console.log(`\n核心冒烟测试全部通过：${pass} 项 ✅`);
   console.log('（NL 端到端 / Hermes 解析 / 真实 Wind 数据测试见 tests/smoke_nl.js）');
 })().catch(e => { console.error('测试失败：', e.message); process.exit(1); });

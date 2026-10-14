@@ -4,9 +4,9 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const config = require('./src/config');
-const { getProvider, resolveWindCode } = require('./src/dataProvider');
+const { getProvider, resolveWindCode, searchWindStocks } = require('./src/dataProvider');
 const { analyzeMacro, summarizeMacro } = require('./src/macroAnalyzer');
-const { selectStocks } = require('./src/stockSelector');
+const { selectStocks, selectByTickers } = require('./src/stockSelector');
 const { deepResearch } = require('./src/deepResearch');
 const { saveReport, listReports, getReport, stats } = require('./src/researchDB');
 const { parseIntent, getAliasMap } = require('./src/nlIntake');
@@ -90,10 +90,19 @@ function buildSelectionMarkdown(sel) {
 // ---------- 自然语言入口 ----------
 async function handleNLThemes(text, topN) {
   const intent = await parseIntent(text);
-  if (!intent.themes.length) return { ok: false, error: '未能从输入识别出主题板块', intent };
+  const themeKeys = intent.themes || [];
+  const concepts = intent.concepts || [];
+  if (!themeKeys.length && !concepts.length) return { ok: false, error: '未能从输入识别出主题板块或概念', intent };
+
   const themes = [];
   const saved = [];
-  for (const themeKey of intent.themes) {
+  const seenKey = new Set();
+  const allThemeMeta = await getProvider().getThemeTickers();
+
+  // 1) 已知主题键（来自 config/themes.json）
+  for (const themeKey of themeKeys) {
+    if (seenKey.has(themeKey)) continue;
+    seenKey.add(themeKey);
     const sel = await selectStocks(themeKey, { topN: topN || 3 });
     if (sel.ok) {
       const md = buildSelectionMarkdown(sel);
@@ -105,6 +114,47 @@ async function handleNLThemes(text, topN) {
       themes.push({ themeKey, ok: false, error: sel.error });
     }
   }
+
+  // 2) 自由概念：若命中某已知主题（key/名称）则按主题处理；否则经 Wind search_stocks 兜底
+  for (const concept of concepts) {
+    if (seenKey.has('concept:' + concept)) continue;
+    const lc = String(concept).toLowerCase();
+    const matchedTheme = allThemeMeta.find(t =>
+      t.key === concept || t.name === concept ||
+      t.key.toLowerCase().includes(lc) || lc.includes(t.key.toLowerCase()) ||
+      t.name.toLowerCase().includes(lc) || lc.includes(t.name.toLowerCase()));
+    if (matchedTheme && !seenKey.has(matchedTheme.key)) {
+      seenKey.add(matchedTheme.key);
+      const sel = await selectStocks(matchedTheme.key, { topN: topN || 3 });
+      if (sel.ok) {
+        const md = buildSelectionMarkdown(sel);
+        const s = saveReport({ type: 'selection', ticker: matchedTheme.key, title: `选股 ${sel.theme}`, markdown: md, meta: { topN: topN || 3, count: sel.count, fromNL: true } });
+        sel.saved = s.entry;
+        themes.push(sel);
+        saved.push(s.entry);
+        continue;
+      }
+    }
+    // Wind 概念兜底：自然语言反查标的池
+    seenKey.add('concept:' + concept);
+    let tickers = null;
+    try { tickers = await searchWindStocks(`筛选A股${concept}概念相关股票，取前8只`, 8); } catch (e) { tickers = null; }
+    if (tickers && tickers.length) {
+      const sel = await selectByTickers(concept, 'concept:' + concept, `Wind 概念筛选：${concept}`, tickers, { topN: topN || 3 });
+      if (sel.ok) {
+        const md = buildSelectionMarkdown(sel);
+        const s = saveReport({ type: 'selection', ticker: 'concept:' + concept, title: `选股 ${sel.theme}`, markdown: md, meta: { topN: topN || 3, count: sel.count, fromNL: true, concept: true } });
+        sel.saved = s.entry;
+        themes.push(sel);
+        saved.push(s.entry);
+      } else {
+        themes.push({ themeKey: concept, ok: false, error: sel.error });
+      }
+    } else {
+      themes.push({ themeKey: concept, ok: false, error: `Wind 未筛选出「${concept}」相关标的（可尝试更具体的概念名）` });
+    }
+  }
+
   return { ok: true, intent, themes, saved };
 }
 

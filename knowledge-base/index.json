@@ -1,6 +1,186 @@
 {
   "entries": [
     {
+      "id": "selection_bank_2026-10-14T11-53-44",
+      "type": "selection",
+      "ticker": "bank",
+      "title": "选股 银行",
+      "file": "selection_bank_2026-10-14T11-53-44.md",
+      "timestamp": "2026-10-14 11:53:44",
+      "date": "2026-10-14",
+      "summary": "> 生成时间：2026-10-14 11:53:44 ｜ 权重：基本面0.4/技术面0.3/消息面0.3"
+    },
+    {
+      "id": "selection_ai_2026-10-14T11-53-44",
+      "type": "selection",
+      "ticker": "ai",
+      "title": "选股 人工智能",
+      "file": "selection_ai_2026-10-14T11-53-44.md",
+      "timestamp": "2026-10-14 11:53:44",
+      "date": "2026-10-14",
+      "summary": "> 生成时间：2026-10-14 11:53:44 ｜ 权重：基本面0.4/技术面0.3/消息面0.3"
+    },
+    {
+      "id": "selection_power_2026-10-14T11-53-44",
+      "type": "selection",
+      "ticker": "power",
+      "title": "选股 电力",
+      "file": "selection_power_2026-10-14T11-53-44.md",
+      "timestamp": "2026-10-14 11:53:44",
+      "date": "2026-10-14",
+      "summary": "> 生成时间：2026-10-14 11:53:44 ｜ 权重：基本面0.4/技术面0.3/消息面0.3"
+    },
+    {
+      "id": "selection_medical_2026-10-14T11-53-44",
+      "type": "selection",
+      "ticker": "medical",
+      "title": "选股 医疗/医药",
+      "file": "selection_medical_2026-10-14T11-53-44.md",
+      "timestamp": "2026-10-14 11:53:44",
+      "date": "2026-10-14",
+      "summary": "> 生成时间：2026-10-14 11:53:44 ｜ 权重：基本面0.4/技术面0.3/消息面0.3"
+    },
+    {
+      "id": "selection_pension_2026-10-14T11-53-44",
+      "type": "selection",
+      "ticker": "pension",
+      "title": "选股 养老/银发经济",
+      "file": "selection_pension_2026-10-14T11-53-44.md",
+      "timestamp": "2026-10-14 11:53:44",
+      "date": "2026-10-14",
+      "summary": "> 生成时间：2026-10-14 11:53:44 ｜ 权重：基本面0.4/技术面0.3/消息面0.3"
+    },
+    {
+      "id": "selection_semiconductor_2026-10-14T11-53-44",
+      "type": "selection",
+      "ticker": "semiconductor",
+      "title": "选股 芯片/半导体",
+      "file": "selection_semiconductor_2026-10-14T11-53-44.md",
+      "timestamp": "2026-10-14 11:53:44",
+      "date": "2026-10-14",
+      "summary": "> 生成时间：2026-10-14 11:53:44 ｜ 权重：基本面0.4/技术面0.3/消息面0.3"
+    },
+    {
+      "id": "selection_bank_2026-10-14T11-53-43",
+      "type": "selection",
+      "ticker": "bank",
+      "title": "选股 银行",
+      "file": "selection_bank_2026-10-14T11-53-43.md",
+      "timestamp": "2026-10-14 11:53:43",
+      "date": "2026-10-14",
+      "summary": "> 生成时间：2026-10-14 11:53:43 ｜ 权重：基本面0.4/技术面0.3/消息面0.3"
+    },
+    {
+      "id": "selection_ai_2026-10-14T11-53-43",
+      "type": "selection",
+      "ticker": "ai",
+      "title": "选股 人工智能",
+      "file": "selection_ai_2026-10-14T11-53-43.md",
+      "timestamp": "2026-10-14 11:53:43",
+      "date": "2026-10-14",
+      "summary": "> 生成时间：2026-10-14 11:53:43 ｜ 权重：基本面0.4/技术面0.3/消息面0.3"
+    },
+    {
+      "id": "selection_power_2026-10-14T11-53-07",
+      "type": "selection",
+      "ticker": "power",
+      "title": "选股 电力",
+      "file": "selection_power_2026-10-14T11-53-07.md",
+      "timestamp": "2026-10-14 11:53:07",
+      "date": "2026-10-14",
+      "summary": "> 生成时间：2026-10-14 11:53:07 ｜ 权重：基本面0.4/技术面0.3/消息面0.3"
+    },
+    {
+      "id": "selection_medical_2026-10-14T11-52-26",
+      "type": "selection",
+      "ticker": "medical",
+      "title": "选股 医疗/医药",
+      "file": "selection_medical_2026-10-14T11-52-26.md",
+      "timestamp": "2026-10-14 11:52:26",
+      "date": "2026-10-14",
+      "summary": "> 生成时间：2026-10-14 11:52:26 ｜ 权重：基本面0.4/技术面0.3/消息面0.3"
+    },
+    {
+      "id": "selection_pension_2026-10-14T11-51-53",
+      "type": "selection",
+      "ticker": "pension",
+      "title": "选股 养老/银发经济",
+      "file": "selection_pension_2026-10-14T11-51-53.md",
+      "timestamp": "2026-10-14 11:51:53",
+      "date": "2026-10-14",
+      "summary": "> 生成时间：2026-10-14 11:51:53 ｜ 权重：基本面0.4/技术面0.3/消息面0.3"
+    },
+    {
+      "id": "selection_semiconductor_2026-10-14T11-51-10",
+      "type": "selection",
+      "ticker": "semiconductor",
+      "title": "选股 芯片/半导体",
+      "file": "selection_semiconductor_2026-10-14T11-51-10.md",
+      "timestamp": "2026-10-14 11:51:10",
+      "date": "2026-10-14",
+      "summary": "> 生成时间：2026-10-14 11:51:10 ｜ 权重：基本面0.4/技术面0.3/消息面0.3"
+    },
+    {
+      "id": "deep_300308.SZ_2026-10-14T11-50-10",
+      "type": "deep",
+      "ticker": "300308.SZ",
+      "title": "深度研究 中际旭创",
+      "file": "deep_300308.SZ_2026-10-14T11-50-10.md",
+      "timestamp": "2026-10-14 11:50:10",
+      "date": "2026-10-14",
+      "summary": "> 研究框架：Serenity 投资研究框架 × Loop Engineering 对抗式迭代 ｜ 数据戳：2026-10-14 03:50:10 ｜ 标的戳：300308.SZ"
+    },
+    {
+      "id": "deep_601698.SH_2026-10-14T10-53-40",
+      "type": "deep",
+      "ticker": "601698.SH",
+      "title": "深度研究 中国卫通",
+      "file": "deep_601698.SH_2026-10-14T10-53-40.md",
+      "timestamp": "2026-10-14 10:53:40",
+      "date": "2026-10-14",
+      "summary": "> 研究框架：Serenity 投资研究框架 × Loop Engineering 对抗式迭代 ｜ 数据戳：2026-10-14 02:53:40 ｜ 标的戳：601698.SH"
+    },
+    {
+      "id": "selection_optical_comm_2026-10-14T10-51-46",
+      "type": "selection",
+      "ticker": "optical_comm",
+      "title": "选股 光通信",
+      "file": "selection_optical_comm_2026-10-14T10-51-46.md",
+      "timestamp": "2026-10-14 10:51:46",
+      "date": "2026-10-14",
+      "summary": "> 生成时间：2026-10-14 10:51:46 ｜ 权重：基本面0.4/技术面0.3/消息面0.3"
+    },
+    {
+      "id": "selection_bank_2026-10-14T10-51-46",
+      "type": "selection",
+      "ticker": "bank",
+      "title": "选股 银行",
+      "file": "selection_bank_2026-10-14T10-51-46.md",
+      "timestamp": "2026-10-14 10:51:46",
+      "date": "2026-10-14",
+      "summary": "> 生成时间：2026-10-14 10:51:46 ｜ 权重：基本面0.4/技术面0.3/消息面0.3"
+    },
+    {
+      "id": "selection_semiconductor_2026-10-14T10-51-46",
+      "type": "selection",
+      "ticker": "semiconductor",
+      "title": "选股 芯片/半导体",
+      "file": "selection_semiconductor_2026-10-14T10-51-46.md",
+      "timestamp": "2026-10-14 10:51:46",
+      "date": "2026-10-14",
+      "summary": "> 生成时间：2026-10-14 10:51:46 ｜ 权重：基本面0.4/技术面0.3/消息面0.3"
+    },
+    {
+      "id": "macro_macro_2026-10-14T10-50-34",
+      "type": "macro",
+      "ticker": "macro",
+      "title": "宏观研判 2026-10-14",
+      "file": "macro_macro_2026-10-14T10-50-34.md",
+      "timestamp": "2026-10-14 10:50:34",
+      "date": "2026-10-14",
+      "summary": "> 生成时间：2026-10-14 10:50:34 ｜ 框架：多因子加权信号 + 概率化解释（潜变量正态模型）"
+    },
+    {
       "id": "deep_601166.SH_2026-10-14T10-05-30",
       "type": "deep",
       "ticker": "601166.SH",

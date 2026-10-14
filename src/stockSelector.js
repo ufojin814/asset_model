@@ -135,6 +135,30 @@ async function scoreStock(stock) {
   };
 }
 
+// 公共：打分 → 组内 z-score → 排序 → 取 TopN。供 selectStocks 与 selectByTickers 复用。
+async function scoreAndRank(stocks, topN, themeName, themeKey, description) {
+  const scored = [];
+  for (const s of stocks) scored.push(await scoreStock(s));
+  // 组内 z-score 标准化统一分（用于跨标的相对比较）
+  const uvals = scored.map(x => x.scores.unified);
+  scored.forEach(x => { x.scores.unifiedZ = round(zscore(x.scores.unified, uvals), 3); });
+  scored.sort((a, b) => b.scores.unified - a.scores.unified);
+  const top = scored.slice(0, topN);
+  const copyList = top.map(x => `${x.ticker}\t${x.name}`).join('\n');
+  return {
+    ok: true,
+    theme: themeName,
+    key: themeKey,
+    description,
+    weights: W,
+    count: scored.length,
+    ranked: scored,
+    top,
+    copyList,
+    generatedAt: new Date().toISOString(),
+  };
+}
+
 async function selectStocks(themeKey, opts = {}) {
   const topN = opts.topN || 3;
   const provider = getProvider();
@@ -149,25 +173,20 @@ async function selectStocks(themeKey, opts = {}) {
     if (s) stocks.push(s);
   }
   if (!stocks.length) return { ok: false, error: `主题「${theme.name}」无可用标的数据（local 演示数据缺失）。` };
-  const scored = [];
-  for (const s of stocks) scored.push(await scoreStock(s));
-  // 组内 z-score 标准化统一分（用于跨标的相对比较）
-  const uvals = scored.map(x => x.scores.unified);
-  scored.forEach(x => { x.scores.unifiedZ = round(zscore(x.scores.unified, uvals), 3); });
-  scored.sort((a, b) => b.scores.unified - a.scores.unified);
-  const top = scored.slice(0, topN);
-  const copyList = top.map(x => `${x.ticker}\t${x.name}`).join('\n');
-  return {
-    ok: true,
-    theme: theme.name,
-    description: theme.description,
-    weights: W,
-    count: scored.length,
-    ranked: scored,
-    top,
-    copyList,
-    generatedAt: new Date().toISOString(),
-  };
+  return scoreAndRank(stocks, topN, theme.name, theme.key, theme.description);
 }
 
-module.exports = { selectStocks, scoreStock, piotroskiF, altmanZ, isFinancial, W };
+// 动态标的池主题：tickers 由外部（如 Wind search_stocks 概念筛选）提供，不走 themes.json。
+async function selectByTickers(themeName, themeKey, description, tickers, opts = {}) {
+  const topN = opts.topN || 3;
+  const provider = getProvider();
+  const stocks = [];
+  for (const tk of tickers) {
+    const s = await provider.getStock(tk);
+    if (s) stocks.push(s);
+  }
+  if (!stocks.length) return { ok: false, error: `主题「${themeName}」无可用标的数据（Wind 筛选未返回有效标的）。` };
+  return scoreAndRank(stocks, topN, themeName, themeKey, description);
+}
+
+module.exports = { selectStocks, selectByTickers, scoreStock, piotroskiF, altmanZ, isFinancial, W };

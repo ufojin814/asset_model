@@ -10,6 +10,7 @@ const ASSET_META = {
   gold: { label: '黄金', color: '#c8972f' },
 };
 const TIER_COLOR = { T1: 'tier-T1', T2: 'tier-T2', T3: 'tier-T3', T4: 'tier-T4', T5: 'tier-T5' };
+const RADAR_COLORS = ['#2f5bea', '#0ea5b7', '#e08a1e', '#c8972f', '#7c5cff', '#15936a', '#d83a3a', '#3aa0ff'];
 const TYPE_COLOR = { macro: '#2f5bea', selection: '#7c5cff', deep: '#0ea5b7' };
 
 // ---------- 工具 ----------
@@ -129,6 +130,67 @@ function drawRadar(canvas, dims) {
   });
 }
 
+// 多标的六维对比雷达：每只标的一种颜色叠加于同一坐标系，便于直观比较强弱差异
+function hexA(hex, a) {
+  const m = String(hex).replace('#', '');
+  const r = parseInt(m.slice(0, 2), 16), g = parseInt(m.slice(2, 4), 16), b = parseInt(m.slice(4, 6), 16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+function drawRadarMulti(canvas, series) {
+  if (!canvas || !series || !series.length) return;
+  const dpr = window.devicePixelRatio || 1;
+  const size = 220;
+  canvas.width = size * dpr; canvas.height = size * dpr;
+  canvas.style.width = size + 'px'; canvas.style.height = size + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const cx = size / 2, cy = size / 2, R = size / 2 - 34;
+  const dims = series[0].dims;
+  const n = dims.length;
+  ctx.clearRect(0, 0, size, size);
+  // 网格环
+  for (let g = 1; g <= 4; g++) {
+    ctx.beginPath();
+    for (let k = 0; k <= n; k++) {
+      const a = -Math.PI / 2 + k * 2 * Math.PI / n;
+      const r = R * g / 4;
+      const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
+      k === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = '#eef1f7'; ctx.lineWidth = 1; ctx.stroke();
+  }
+  // 轴 + 标签
+  ctx.fillStyle = '#5a667e'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  dims.forEach((d, k) => {
+    const a = -Math.PI / 2 + k * 2 * Math.PI / n;
+    const x = cx + R * Math.cos(a), y = cy + R * Math.sin(a);
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(x, y); ctx.strokeStyle = '#eef1f7'; ctx.stroke();
+    const lx = cx + (R + 16) * Math.cos(a), ly = cy + (R + 16) * Math.sin(a);
+    ctx.fillText(d.label, lx, ly);
+  });
+  // 每个标的：同坐标系叠加多边形
+  series.forEach(se => {
+    if (!se.dims || se.dims.length !== n) return;
+    ctx.beginPath();
+    se.dims.forEach((d, k) => {
+      const a = -Math.PI / 2 + k * 2 * Math.PI / n;
+      const r = R * Math.max(0, Math.min(100, d.value)) / 100;
+      const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
+      k === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.closePath();
+    ctx.fillStyle = hexA(se.color, 0.10); ctx.fill();
+    ctx.strokeStyle = se.color; ctx.lineWidth = 2; ctx.stroke();
+    se.dims.forEach((d, k) => {
+      const a = -Math.PI / 2 + k * 2 * Math.PI / n;
+      const r = R * Math.max(0, Math.min(100, d.value)) / 100;
+      const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
+      ctx.beginPath(); ctx.arc(x, y, 2.5, 0, 2 * Math.PI); ctx.fillStyle = se.color; ctx.fill();
+    });
+  });
+}
+
 // ---------- 宏观研判 ----------
 async function runMacro() {
   const grid = $('#macroGrid'); grid.innerHTML = '<div class="loading"><div class="spinner"></div>正在生成宏观研判…</div>';
@@ -172,28 +234,36 @@ async function runSelection() {
       const card = el('div', 'theme-card');
       const topN = (th.top || []).length;
       const ranked = th.ranked || th.top || [];
-      let rows = '', radarDims = null;
+      let rows = '';
       ranked.forEach((s, idx) => {
         const isTop = idx < topN;
         rows += `<div class="stock-row"><div class="stock-rank ${isTop ? 'r-top' : ''}">${idx + 1}</div>
           <div class="stock-main"><div class="stock-name">${s.name}${isTop ? ' <span class="pick-tag">入选</span>' : ''}</div><div class="stock-code">${s.ticker}</div></div>
           <div class="score-bar"><i style="width:${Math.min(100, s.scores.unified)}%"></i></div>
           <div class="score-num">${s.scores.unified}</div></div>`;
-        if (idx === 0) radarDims = s.radar;
       });
       card.innerHTML = `<h3><i class="fas fa-layer-group" style="color:var(--brand)"></i> ${th.theme}</h3>
         <p class="theme-desc">${th.description || ''} ｜ 共 ${th.count} 只，全部展示（前 ${topN} 只入选）</p>
-        <div class="stock-grid"><div>${rows}</div><div class="radar-wrap"><canvas></canvas></div></div>
+        <div class="stock-grid"><div>${rows}</div><div class="radar-wrap"><div class="radar-cap">六维对比 · 全部 ${ranked.length} 只标的叠加</div><canvas></canvas><div class="radar-legend"></div></div></div>
         <div style="margin-top:12px"><button class="btn" data-copy="${encodeURIComponent(th.copyList || '')}"><i class="fas fa-copy"></i> 复制清单</button></div>`;
       box.appendChild(card);
-      if (radarDims) {
-        const dims = [
-          { label: '财务健康', value: radarDims['财务健康'] }, { label: '安全边际', value: radarDims['安全边际'] },
-          { label: '估值吸引', value: radarDims['估值吸引力'] }, { label: '价格动量', value: radarDims['价格动量'] },
-          { label: '低波质量', value: radarDims['低波质量'] }, { label: '消息情绪', value: radarDims['消息情绪'] },
-        ];
-        drawRadar($('canvas', card), dims);
-      }
+      // 多标的六维对比雷达：每只标的一种颜色叠加对比（非单张共享图，可直观比较强弱差异）
+      const radarSeries = ranked.map((s, i) => ({
+        label: `${i + 1}. ${s.name}`,
+        color: RADAR_COLORS[i % RADAR_COLORS.length],
+        dims: [
+          { label: '财务健康', value: s.radar['财务健康'] }, { label: '安全边际', value: s.radar['安全边际'] },
+          { label: '估值吸引', value: s.radar['估值吸引力'] }, { label: '价格动量', value: s.radar['价格动量'] },
+          { label: '低波质量', value: s.radar['低波质量'] }, { label: '消息情绪', value: s.radar['消息情绪'] },
+        ],
+      }));
+      drawRadarMulti($('canvas', card), radarSeries);
+      const legend = $('.radar-legend', card);
+      radarSeries.forEach(se => {
+        const item = el('span', 'legend-item');
+        item.innerHTML = `<i style="background:${se.color}"></i>${se.label}`;
+        legend.appendChild(item);
+      });
     });
     $$('[data-copy]', box).forEach(b => b.onclick = () => copyText(decodeURIComponent(b.dataset.copy)));
   } catch (e) { box.innerHTML = '<div class="empty">请求异常：' + e.message + '</div>'; }
