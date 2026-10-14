@@ -239,6 +239,50 @@ async function fetchWindStock(ticker) {
   return stock;
 }
 
+// ---------- 经 Wind 将「股票名称」解析为标准代码（演示集未收录时兜底） ----------
+// 用户常输入标准中文名（如「中国卫通」），而演示数据集仅含少量种子标的。
+// 优先用 basicinfo（NL 查询基本档案，返回代码列）；回退 quote（windcode 同时支持名称/代码）。
+async function resolveWindCode(rawName) {
+  if (!WIND_SKILL_DIR || !WIND_API_KEY_VAL) return null;
+  const name = String(rawName || '').trim();
+  if (!name) return null;
+  const r1 = await callWindCli('stock_data', 'get_stock_basicinfo', { question: `查询${name}股票的基本档案，返回代码、简称、所属行业` });
+  let code = extractWindCode(parseWindCli(r1));
+  if (!code) {
+    const r2 = await callWindCli('stock_data', 'get_stock_quote', { windcode: name, indexes: '最新成交价' });
+    code = extractWindCode(parseWindCli(r2));
+  }
+  return code ? { code, name } : null;
+}
+// 从 Wind 返回的首行合并对象中提取 6 位代码并规范化为 XXXXXX.SH/SZ
+function extractWindCode(obj) {
+  if (!obj) return null;
+  const candidates = [];
+  for (const [k, v] of Object.entries(obj)) {
+    if (v === undefined || v === null || v === '') continue;
+    const kl = String(k).toLowerCase();
+    if (kl.includes('代码') || kl.includes('code')) candidates.push(String(v));
+  }
+  // 兜底：任意值直接形如 6 位数字.交易所
+  for (const v of Object.values(obj)) {
+    if (v !== undefined && v !== null && v !== '' && /\d{6}\.(SH|SZ)/i.test(String(v))) candidates.push(String(v));
+  }
+  for (const raw of candidates) {
+    const s = String(raw).trim().toUpperCase();
+    const m = s.match(/(\d{6})\.?(SH|SZ)?/i);
+    if (!m) continue;
+    const num = m[1];
+    let ex = (m[2] || '').toUpperCase();
+    if (!ex) {
+      if (num.startsWith('6')) ex = 'SH';           // 沪市
+      else if (num.startsWith('0') || num.startsWith('3')) ex = 'SZ'; // 深市
+      else ex = 'SH';
+    }
+    return `${num}.${ex}`;
+  }
+  return null;
+}
+
 const windAdapter = {
   type: 'wind',
   getThemeTickers: localAdapter.getThemeTickers,
@@ -320,4 +364,4 @@ function getProvider(type = config.dataProvider) {
   return registry[type] || localAdapter;
 }
 
-module.exports = { getProvider, localAdapter, windAdapter, akshareAdapter, autoAdapter, resolveTheme };
+module.exports = { getProvider, localAdapter, windAdapter, akshareAdapter, autoAdapter, resolveTheme, resolveWindCode };

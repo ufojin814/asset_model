@@ -16,7 +16,8 @@
   --mono:'SF Mono','JetBrains Mono','Cascadia Code',Consolas,monospace;
 }
 *{box-sizing:border-box}
-html,body{height:100%}
+/* 仅设最小高度，避免 height:100% 在某些布局下把溢出内容裁掉；内容超长时整页正常滚动 */
+html,body{min-height:100%}
 body{margin:0;font-family:var(--font);background:var(--bg-page);color:var(--text-primary);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
 ::-webkit-scrollbar{width:9px;height:9px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -86,6 +87,13 @@ body{margin:0;font-family:var(--font);background:var(--bg-page);color:var(--text
 .seg.mid{background:linear-gradient(90deg,#ffcf8f,#e08a1e)}
 .seg.bear{background:linear-gradient(90deg,#ff8a8a,#d83a3a)}
 .bar-legend{display:flex;justify-content:space-between;font-size:11px;color:var(--text-tertiary);margin-top:5px}
+/* 宏观：每期限「研判依据 + 结论」说明 */
+.hz-explain{margin-top:9px;font-size:12px;color:var(--text-secondary);line-height:1.7}
+.hz-explain-label{font-weight:700;color:var(--text-primary)}
+.hz-concl{margin-left:8px;color:var(--text-primary)}
+.factor-chip{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:20px;margin:3px 4px 3px 0}
+.factor-chip.bull{background:rgba(21,147,106,.12);color:#15936a;border:1px solid rgba(21,147,106,.28)}
+.factor-chip.bear{background:rgba(216,58,58,.10);color:#d83a3a;border:1px solid rgba(216,58,58,.26)}
 
 /* 自然语言输入 */
 .nl-box{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow-sm);margin-bottom:20px}
@@ -111,6 +119,7 @@ body{margin:0;font-family:var(--font);background:var(--bg-page);color:var(--text
 .stock-rank.r-top{box-shadow:0 4px 10px rgba(47,91,234,.4)}
 .stock-main{flex:1;min-width:0}
 .stock-name{font-weight:700;font-size:14.5px}
+.pick-tag{display:inline-block;font-size:10.5px;font-weight:800;color:#fff;background:var(--c-green);padding:1px 7px;border-radius:10px;margin-left:6px;vertical-align:middle}
 .stock-code{color:var(--text-tertiary);font-size:12px;font-family:var(--mono)}
 .score-bar{flex:1;max-width:220px;height:8px;background:#eef1f7;border-radius:6px;overflow:hidden}
 .score-bar > i{display:block;height:100%;background:var(--brand-grad)}

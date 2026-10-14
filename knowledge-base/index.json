@@ -1,6 +1,226 @@
 {
   "entries": [
     {
+      "id": "deep_601166.SH_2026-10-14T10-05-30",
+      "type": "deep",
+      "ticker": "601166.SH",
+      "title": "深度研究 兴业银行",
+      "file": "deep_601166.SH_2026-10-14T10-05-30.md",
+      "timestamp": "2026-10-14 10:05:30",
+      "date": "2026-10-14",
+      "summary": "> 研究框架：Serenity 投资研究框架 × Loop Engineering 对抗式迭代 ｜ 数据戳：2026-10-14 02:05:30 ｜ 标的戳：601166.SH"
+    },
+    {
+      "id": "deep_600036.SH_2026-10-14T10-05-30",
+      "type": "deep",
+      "ticker": "600036.SH",
+      "title": "深度研究 招商银行",
+      "file": "deep_600036.SH_2026-10-14T10-05-30.md",
+      "timestamp": "2026-10-14 10:05:30",
+      "date": "2026-10-14",
+      "summary": "> 研究框架：Serenity 投资研究框架 × Loop Engineering 对抗式迭代 ｜ 数据戳：2026-10-14 02:05:30 ｜ 标的戳：600036.SH"
+    },
+    {
+      "id": "deep_601166.SH_2026-10-14T10-05-30",
+      "type": "deep",
+      "ticker": "601166.SH",
+      "title": "深度研究 兴业银行",
+      "file": "deep_601166.SH_2026-10-14T10-05-30.md",
+      "timestamp": "2026-10-14 10:05:30",
+      "date": "2026-10-14",
+      "summary": "> 研究框架：Serenity 投资研究框架 × Loop Engineering 对抗式迭代 ｜ 数据戳：2026-10-14 02:05:30 ｜ 标的戳：601166.SH"
+    },
+    {
+      "id": "deep_600036.SH_2026-10-14T10-05-30",
+      "type": "deep",
+      "ticker": "600036.SH",
+      "title": "深度研究 招商银行",
+      "file": "deep_600036.SH_2026-10-14T10-05-30.md",
+      "timestamp": "2026-10-14 10:05:30",
+      "date": "2026-10-14",
+      "summary": "> 研究框架：Serenity 投资研究框架 × Loop Engineering 对抗式迭代 ｜ 数据戳：2026-10-14 02:05:30 ｜ 标的戳：600036.SH"
+    },
+    {
+      "id": "selection_semiconductor_2026-10-14T10-04-57",
+      "type": "selection",
+      "ticker": "semiconductor",
+      "title": "选股 芯片/半导体",
+      "file": "selection_semiconductor_2026-10-14T10-04-57.md",
+      "timestamp": "2026-10-14 10:04:57",
+      "date": "2026-10-14",
+      "summary": "> 生成时间：2026-10-14 10:04:57 ｜ 权重：基本面0.4/技术面0.3/消息面0.3"
+    },
+    {
+      "id": "selection_optical_comm_2026-10-14T10-04-57",
+      "type": "selection",
+      "ticker": "optical_comm",
+      "title": "选股 光通信",
+      "file": "selection_optical_comm_2026-10-14T10-04-57.md",
+      "timestamp": "2026-10-14 10:04:57",
+      "date": "2026-10-14",
+      "summary": "> 生成时间：2026-10-14 10:04:57 ｜ 权重：基本面0.4/技术面0.3/消息面0.3"
+    },
+    {
+      "id": "deep_300308.SZ_2026-10-14T10-04-27",
+      "type": "deep",
+      "ticker": "300308.SZ",
+      "title": "深度研究 中际旭创",
+      "file": "deep_300308.SZ_2026-10-14T10-04-27.md",
+      "timestamp": "2026-10-14 10:04:27",
+      "date": "2026-10-14",
+      "summary": "> 研究框架：Serenity 投资研究框架 × Loop Engineering 对抗式迭代 ｜ 数据戳：2026-10-14 02:04:27 ｜ 标的戳：300308.SZ"
+    },
+    {
+      "id": "deep_601698.SH_2026-10-14T10-03-45",
+      "type": "deep",
+      "ticker": "601698.SH",
+      "title": "深度研究 中国卫通",
+      "file": "deep_601698.SH_2026-10-14T10-03-45.md",
+      "timestamp": "2026-10-14 10:03:45",
+      "date": "2026-10-14",
+      "summary": "> 研究框架：Serenity 投资研究框架 × Loop Engineering 对抗式迭代 ｜ 数据戳：2026-10-14 02:03:45 ｜ 标的戳：601698.SH"
+    },
+    {
+      "id": "deep_601698.SH_2026-10-14T10-02-03",
+      "type": "deep",
+      "ticker": "601698.SH",
+      "title": "深度研究 中国卫通",
+      "file": "deep_601698.SH_2026-10-14T10-02-03.md",
+      "timestamp": "2026-10-14 10:02:03",
+      "date": "2026-10-14",
+      "summary": "> 研究框架：Serenity 投资研究框架 × Loop Engineering 对抗式迭代 ｜ 数据戳：2026-10-14 02:02:03 ｜ 标的戳：601698.SH"
+    },
+    {
+      "id": "deep_601698.SH_2026-10-14T10-01-26",
+      "type": "deep",
+      "ticker": "601698.SH",
+      "title": "深度研究 中国卫通",
+      "file": "deep_601698.SH_2026-10-14T10-01-26.md",
+      "timestamp": "2026-10-14 10:01:26",
+      "date": "2026-10-14",
+      "summary": "> 研究框架：Serenity 投资研究框架 × Loop Engineering 对抗式迭代 ｜ 数据戳：2026-10-14 02:01:26 ｜ 标的戳：601698.SH"
+    },
+    {
+      "id": "macro_macro_2026-10-14T09-56-05",
+      "type": "macro",
+      "ticker": "macro",
+      "title": "宏观研判 2026-10-14",
+      "file": "macro_macro_2026-10-14T09-56-05.md",
+      "timestamp": "2026-10-14 09:56:05",
+      "date": "2026-10-14",
+      "summary": "> 生成时间：2026-10-14 09:56:05 ｜ 框架：多因子加权信号 + 概率化解释（潜变量正态模型）"
+    },
+    {
+      "id": "selection_bank_2026-10-14T09-56-05",
+      "type": "selection",
+      "ticker": "bank",
+      "title": "选股 银行",
+      "file": "selection_bank_2026-10-14T09-56-05.md",
+      "timestamp": "2026-10-14 09:56:05",
+      "date": "2026-10-14",
+      "summary": "> 生成时间：2026-10-14 09:56:05 ｜ 权重：基本面0.4/技术面0.3/消息面0.3"
+    },
+    {
+      "id": "deep_601166.SH_2026-10-14T09-55-33",
+      "type": "deep",
+      "ticker": "601166.SH",
+      "title": "深度研究 兴业银行",
+      "file": "deep_601166.SH_2026-10-14T09-55-33.md",
+      "timestamp": "2026-10-14 09:55:33",
+      "date": "2026-10-14",
+      "summary": "> 研究框架：Serenity 投资研究框架 × Loop Engineering 对抗式迭代 ｜ 数据戳：2026-10-14 01:55:33 ｜ 标的戳：601166.SH"
+    },
+    {
+      "id": "deep_600036.SH_2026-10-14T09-55-33",
+      "type": "deep",
+      "ticker": "600036.SH",
+      "title": "深度研究 招商银行",
+      "file": "deep_600036.SH_2026-10-14T09-55-33.md",
+      "timestamp": "2026-10-14 09:55:33",
+      "date": "2026-10-14",
+      "summary": "> 研究框架：Serenity 投资研究框架 × Loop Engineering 对抗式迭代 ｜ 数据戳：2026-10-14 01:55:33 ｜ 标的戳：600036.SH"
+    },
+    {
+      "id": "deep_601166.SH_2026-10-14T09-55-33",
+      "type": "deep",
+      "ticker": "601166.SH",
+      "title": "深度研究 兴业银行",
+      "file": "deep_601166.SH_2026-10-14T09-55-33.md",
+      "timestamp": "2026-10-14 09:55:33",
+      "date": "2026-10-14",
+      "summary": "> 研究框架：Serenity 投资研究框架 × Loop Engineering 对抗式迭代 ｜ 数据戳：2026-10-14 01:55:33 ｜ 标的戳：601166.SH"
+    },
+    {
+      "id": "deep_600036.SH_2026-10-14T09-55-33",
+      "type": "deep",
+      "ticker": "600036.SH",
+      "title": "深度研究 招商银行",
+      "file": "deep_600036.SH_2026-10-14T09-55-33.md",
+      "timestamp": "2026-10-14 09:55:33",
+      "date": "2026-10-14",
+      "summary": "> 研究框架：Serenity 投资研究框架 × Loop Engineering 对抗式迭代 ｜ 数据戳：2026-10-14 01:55:33 ｜ 标的戳：600036.SH"
+    },
+    {
+      "id": "selection_semiconductor_2026-10-14T09-55-12",
+      "type": "selection",
+      "ticker": "semiconductor",
+      "title": "选股 芯片/半导体",
+      "file": "selection_semiconductor_2026-10-14T09-55-12.md",
+      "timestamp": "2026-10-14 09:55:12",
+      "date": "2026-10-14",
+      "summary": "> 生成时间：2026-10-14 09:55:12 ｜ 权重：基本面0.4/技术面0.3/消息面0.3"
+    },
+    {
+      "id": "selection_optical_comm_2026-10-14T09-55-12",
+      "type": "selection",
+      "ticker": "optical_comm",
+      "title": "选股 光通信",
+      "file": "selection_optical_comm_2026-10-14T09-55-12.md",
+      "timestamp": "2026-10-14 09:55:12",
+      "date": "2026-10-14",
+      "summary": "> 生成时间：2026-10-14 09:55:12 ｜ 权重：基本面0.4/技术面0.3/消息面0.3"
+    },
+    {
+      "id": "deep_300308.SZ_2026-10-14T09-54-42",
+      "type": "deep",
+      "ticker": "300308.SZ",
+      "title": "深度研究 中际旭创",
+      "file": "deep_300308.SZ_2026-10-14T09-54-42.md",
+      "timestamp": "2026-10-14 09:54:42",
+      "date": "2026-10-14",
+      "summary": "> 研究框架：Serenity 投资研究框架 × Loop Engineering 对抗式迭代 ｜ 数据戳：2026-10-14 01:54:42 ｜ 标的戳：300308.SZ"
+    },
+    {
+      "id": "selection_optical_comm_2026-10-14T09-31-18",
+      "type": "selection",
+      "ticker": "optical_comm",
+      "title": "选股 光通信",
+      "file": "selection_optical_comm_2026-10-14T09-31-18.md",
+      "timestamp": "2026-10-14 09:31:18",
+      "date": "2026-10-14",
+      "summary": "> 生成时间：2026-10-14 09:31:18 ｜ 权重：基本面0.4/技术面0.3/消息面0.3"
+    },
+    {
+      "id": "selection_semiconductor_2026-10-14T09-31-18",
+      "type": "selection",
+      "ticker": "semiconductor",
+      "title": "选股 芯片/半导体",
+      "file": "selection_semiconductor_2026-10-14T09-31-18.md",
+      "timestamp": "2026-10-14 09:31:18",
+      "date": "2026-10-14",
+      "summary": "> 生成时间：2026-10-14 09:31:18 ｜ 权重：基本面0.4/技术面0.3/消息面0.3"
+    },
+    {
+      "id": "macro_macro_2026-10-14T09-29-58",
+      "type": "macro",
+      "ticker": "macro",
+      "title": "宏观研判 2026-10-14",
+      "file": "macro_macro_2026-10-14T09-29-58.md",
+      "timestamp": "2026-10-14 09:29:58",
+      "date": "2026-10-14",
+      "summary": "> 生成时间：2026-10-14 09:29:58 ｜ 框架：多因子加权信号 + 概率化解释（潜变量正态模型）"
+    },
+    {
       "id": "deep_601166.SH_2026-10-14T09-15-14",
       "type": "deep",
       "ticker": "601166.SH",

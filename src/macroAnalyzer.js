@@ -75,6 +75,20 @@ function assetTilt(assetKey, raw, horizonKey) {
   return { tilt: round(tilt, 4), contrib };
 }
 
+// 生成某期限「研判依据 + 结论」的可读解释：
+// 取对倾斜度贡献绝对值最大的前 3 个因子，区分利好（贡献>0）/利空（贡献<0），
+// 结合 factorDocs 的中文标签，供前端直接渲染「研判依据」与「结论」。
+function buildHorizonExplain(contrib) {
+  const docs = config.macroModel.factorDocs || {};
+  const entries = Object.entries(contrib)
+    .map(([f, v]) => ({ f, v, label: (docs[f] && docs[f].label) || f }))
+    .sort((a, b) => Math.abs(b.v) - Math.abs(a.v));
+  const top = entries.slice(0, 3);
+  return {
+    factors: top.map(e => ({ label: e.label, contrib: round(e.v, 3), bull: e.v > 0 })),
+  };
+}
+
 function tiltToProbs(tilt, sigma) {
   const pBull2 = normCdf(tilt / sigma); // bull vs bear 两分类
   const neutralShare = clamp(sigma - 0.30, 0, 0.45);
@@ -98,9 +112,10 @@ function analyzeMacro(snapshot, opts = {}) {
       const { tilt, contrib } = assetTilt(aKey, raw, hKey);
       const probs = tiltToProbs(tilt, hCfg.sigma);
       const stance = probs.看涨 >= 0.45 ? '看涨' : probs.看跌 >= 0.45 ? '看跌' : '震荡';
+      const explain = buildHorizonExplain(contrib);
       result.assets[aKey].byHorizon[hKey] = {
         label: hCfg.label, windows: hCfg.windows,
-        tilt, probs, stance, contrib,
+        tilt, probs, stance, contrib, explain,
       };
     }
   }

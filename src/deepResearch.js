@@ -99,6 +99,9 @@ async function deepResearch(ticker, opts = {}) {
   const provider = getProvider();
   const stock = await provider.getStock(ticker);
   if (!stock) return { ok: false, error: `未找到标的 ${ticker} 的本地数据（演示数据缺失）。` };
+  const srcLabel = (stock._source === 'wind') ? 'Wind 真实数据（S级）'
+    : (stock._source === 'akshare') ? 'akshare 开源数据（B/C级）'
+    : '本地演示数据（演示种子，非真实行情）';
   const score = await scoreStock(stock);
   const snap = await provider.getMacroSnapshot();
   const mScore = macroScore(snap);
@@ -112,11 +115,11 @@ async function deepResearch(ticker, opts = {}) {
   L.push(`# 个股深度研究报告 · ${stock.name}（${stock.ticker}）`);
   L.push('');
   L.push(`> 研究框架：Serenity 投资研究框架 × Loop Engineering 对抗式迭代 ｜ 数据戳：${new Date().toISOString().slice(0, 19).replace('T', ' ')} ｜ 标的戳：${stock.ticker}`);
-  L.push(`> 数据源：local 演示数据（真实数据经 src/dataProvider.js 接入 Wind/akshare）｜ 本报告仅供研究，不构成投资建议`);
+  L.push(`> 数据源：${srcLabel}（经 src/dataProvider.js 接入）｜ 本报告仅供研究，不构成投资建议`);
   L.push('');
   L.push(`## 节点门禁状态（串行门禁制）`);
   const nodes = [
-    ['节点0 任务拆解与数据校验', '通过', '数据源确认 local'],
+    ['节点0 任务拆解与数据校验', '通过', '数据源确认 ' + srcLabel],
     ['节点1 宏观环境定位', mScore >= 5 ? '通过' : '返工', `宏观评分=${mScore}`],
     ['节点2 行业研究', '通过', `主题=${stock.theme || '—'}`],
     ['节点3 个股初筛分层', rating.tier !== 'T5' ? '通过' : '熔断', `初判 ${rating.tier}`],
@@ -175,7 +178,7 @@ async function deepResearch(ticker, opts = {}) {
   L.push(`- **投资评级：${rating.tier}（${rating.pool}）**`);
   L.push(`- 统一评分 ${score.scores.unified}（基本面 ${score.scores.fundamental} / 技术面 ${score.scores.technical} / 消息面 ${score.scores.sentiment}）。`);
   L.push(`- 核心逻辑：${score.conclusion}`);
-  L.push(`- 关键假设与数据源：local 演示数据；真实测算需接入 Wind（S级）/akshare（B级）并补充产业链与机构持仓。`);
+  L.push(`- 关键假设与数据源：${stock._source === 'local-demo-fallback' ? '本地演示数据（演示种子，非真实行情）；真实测算需接入 Wind（S级）/akshare（B级）并补充产业链与机构持仓。' : srcLabel + '；产业链与机构持仓等细节待进一步补充。'}`);
   L.push('');
   L.push(`---`);
   L.push(`*本报告由 Serenity 框架自动生成，遵循「量化强制铁则 / 角色隔离 / 标准先行 / 可追溯 / 闭环进化」。所有结论须以可核验数据支撑，严禁虚构。*`);

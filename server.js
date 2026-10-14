@@ -4,7 +4,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const config = require('./src/config');
-const { getProvider } = require('./src/dataProvider');
+const { getProvider, resolveWindCode } = require('./src/dataProvider');
 const { analyzeMacro, summarizeMacro } = require('./src/macroAnalyzer');
 const { selectStocks } = require('./src/stockSelector');
 const { deepResearch } = require('./src/deepResearch');
@@ -52,11 +52,12 @@ function buildMacroMarkdown(macro) {
   L.push('## 大类资产概率研判（看涨/震荡/看跌）');
   for (const [aKey, aCfg] of Object.entries(macro.assets)) {
     L.push(`### ${aCfg.label}`);
-    L.push('| 期限 | 倾斜度T | 看涨 | 震荡 | 看跌 | 结论 |');
-    L.push('|------|--------|------|------|------|------|');
+    L.push('| 期限 | 倾斜度T | 看涨 | 震荡 | 看跌 | 结论 | 研判依据（主因） |');
+    L.push('|------|--------|------|------|------|------|------------------|');
     for (const h of ['short', 'mid', 'long']) {
       const h2 = aCfg.byHorizon[h];
-      L.push(`| ${h2.label} | ${h2.tilt} | ${(h2.probs.看涨 * 100).toFixed(1)}% | ${(h2.probs.震荡 * 100).toFixed(1)}% | ${(h2.probs.看跌 * 100).toFixed(1)}% | ${h2.stance} |`);
+      const basis = (h2.explain.factors || []).map(f => `${f.label}(${f.bull ? '利好' : '利空'}${f.bull ? '+' : '−'}${Math.abs(f.contrib).toFixed(2)})`).join('；');
+      L.push(`| ${h2.label} | ${h2.tilt} | ${(h2.probs.看涨 * 100).toFixed(1)}% | ${(h2.probs.震荡 * 100).toFixed(1)}% | ${(h2.probs.看跌 * 100).toFixed(1)}% | ${h2.stance} | ${basis} |`);
     }
     L.push('');
   }
@@ -119,8 +120,17 @@ async function handleNLDeep(text) {
     if (partial) return { raw: t, code: alias.nameToCode[partial], name: partial };
     return { raw: t, code: null, name: t };
   });
+  // 本地/演示集未命中的名称（如「中国卫通」）→ 经 Wind 解析为标准代码
+  for (const r of resolved) {
+    if (!r.code) {
+      try {
+        const wc = await resolveWindCode(r.raw);
+        if (wc) { r.code = wc.code; r.name = wc.name || r.raw; r.resolvedBy = 'wind'; }
+      } catch (e) { /* 解析失败保持 code=null，后续按未命中处理 */ }
+    }
+  }
   const tasks = resolved.map(async r => {
-    if (!r.code) return { ...r, ok: false, error: '无法解析为已知标的代码（演示数据集中无此标的）' };
+    if (!r.code) return { ...r, ok: false, error: '无法解析为已知标的代码（演示数据集中无此标的，且 Wind 亦未匹配）' };
     const dr = await deepResearch(r.code); // deepResearch 内部已落库
     return { ...r, ok: dr.ok, rating: dr.rating, markdown: dr.markdown, json: dr.json, error: dr.error };
   });

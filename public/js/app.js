@@ -144,8 +144,11 @@ async function runMacro() {
       let hz = '';
       for (const hk of ['short', 'mid', 'long']) {
         const h = a.byHorizon[hk]; const p = h.probs;
+        const chips = (h.explain && h.explain.factors || []).map(f =>
+          `<span class="factor-chip ${f.bull ? 'bull' : 'bear'}">${f.label} ${f.bull ? '+' : '−'}${Math.abs(f.contrib).toFixed(2)}</span>`).join('');
         hz += `<div class="horizon"><div class="hz-top"><span class="hz-label">${h.label} · ${h.windows}</span><span class="hz-stance ${stanceColor(h.stance)}">${h.stance} · 看涨 ${pct(p['看涨'])}</span></div>
-          <div class="bar"><span class="seg bull" style="width:${p['看涨'] * 100}%"></span><span class="seg mid" style="width:${p['震荡'] * 100}%"></span><span class="seg bear" style="width:${p['看跌'] * 100}%"></span></div></div>`;
+          <div class="bar"><span class="seg bull" style="width:${p['看涨'] * 100}%"></span><span class="seg mid" style="width:${p['震荡'] * 100}%"></span><span class="seg bear" style="width:${p['看跌'] * 100}%"></span></div>
+          <div class="hz-explain"><span class="hz-explain-label">研判依据：</span>${chips}<span class="hz-concl">结论：<b>${h.stance}</b></span></div></div>`;
       }
       card.innerHTML = `<div class="asset-head"><span class="asset-name">${meta.label}</span><span class="asset-tag" style="background:${meta.color}">四资产研判</span></div>${hz}`;
       grid.appendChild(card);
@@ -167,16 +170,19 @@ async function runSelection() {
     d.themes.forEach(th => {
       if (!th.ok) { box.appendChild(el('div', 'empty', '主题「' + (th.themeKey || '') + '」无数据：' + (th.error || ''))); return; }
       const card = el('div', 'theme-card');
+      const topN = (th.top || []).length;
+      const ranked = th.ranked || th.top || [];
       let rows = '', radarDims = null;
-      (th.top || []).forEach((s, idx) => {
-        rows += `<div class="stock-row"><div class="stock-rank ${idx === 0 ? 'r-top' : ''}">${idx + 1}</div>
-          <div class="stock-main"><div class="stock-name">${s.name}</div><div class="stock-code">${s.ticker}</div></div>
+      ranked.forEach((s, idx) => {
+        const isTop = idx < topN;
+        rows += `<div class="stock-row"><div class="stock-rank ${isTop ? 'r-top' : ''}">${idx + 1}</div>
+          <div class="stock-main"><div class="stock-name">${s.name}${isTop ? ' <span class="pick-tag">入选</span>' : ''}</div><div class="stock-code">${s.ticker}</div></div>
           <div class="score-bar"><i style="width:${Math.min(100, s.scores.unified)}%"></i></div>
           <div class="score-num">${s.scores.unified}</div></div>`;
         if (idx === 0) radarDims = s.radar;
       });
       card.innerHTML = `<h3><i class="fas fa-layer-group" style="color:var(--brand)"></i> ${th.theme}</h3>
-        <p class="theme-desc">${th.description || ''} ｜ 共 ${th.count} 只，展示 Top${th.top.length}</p>
+        <p class="theme-desc">${th.description || ''} ｜ 共 ${th.count} 只，全部展示（前 ${topN} 只入选）</p>
         <div class="stock-grid"><div>${rows}</div><div class="radar-wrap"><canvas></canvas></div></div>
         <div style="margin-top:12px"><button class="btn" data-copy="${encodeURIComponent(th.copyList || '')}"><i class="fas fa-copy"></i> 复制清单</button></div>`;
       box.appendChild(card);
