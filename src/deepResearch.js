@@ -2,7 +2,7 @@
 // 结构：节点0-9 门禁 → 宏观定位 → 行业 → 八维度个股 → 基本面证伪 → 五情景估值 → 量化风控 → 组合配置 → 终稿。
 // 所有数值由 data/stocks/{ticker}.json 与 data/macro/snapshot.json 实算，缺项标注「数据待补」，严禁虚构。
 const { getProvider } = require('./dataProvider');
-const { scoreStock, piotroskiF, altmanZ } = require('./stockSelector');
+const { scoreStock, piotroskiF, altmanZ, isFinancial } = require('./stockSelector');
 const config = require('./config');
 const { round, clamp } = require('./utils');
 
@@ -49,7 +49,8 @@ function falsificationList(stock) {
   const f = stock.fundamentals || {};
   const t = stock.technicals || {};
   const list = [];
-  const z = altmanZ(f);
+  // 金融业不适用 Altman Z（负债结构与制造业迥异）→ 置 null，不触发伪「违约/退市」致命点
+  const z = isFinancial(stock) ? null : altmanZ(f);
   if (z != null && z < 1.81) list.push({ level: '致命', point: `Altman Z=${round(z, 2)} < 1.81，财务安全边际不足，存在违约/退市风险`, evidence: `Z=1.2X1+1.4X2+3.3X3+0.6X4+X5=${round(z, 2)}` });
   if (f.pePct != null && f.pePct > 0.8) list.push({ level: '严重', point: `PE 处于历史 ${round(f.pePct * 100)}% 分位，估值泡沫风险`, evidence: `pePct=${f.pePct}` });
   if ((f.levDelta ?? 0) > 0) list.push({ level: '严重', point: `杠杆率环比上升（levDelta=${f.levDelta}），财务杠杆风险累积`, evidence: `levDelta>0` });
@@ -63,16 +64,35 @@ function falsificationList(stock) {
 function tierRating(stock, score) {
   const f = stock.fundamentals || {};
   const t = stock.technicals || {};
-  const fs = piotroskiF(f);
-  const z = altmanZ(f);
   let tier = 'T4', pool = '观察池';
-  const good = (fs != null && fs >= 7) && (z != null && z >= 2.99) && (f.pePct != null && f.pePct < 0.5) && (t.ret12m ?? 0) > 0;
-  const mid = (fs != null && fs >= 5) && (z != null && z >= 1.81) && (f.pePct == null || f.pePct < 0.85);
-  if (good) { tier = 'T1'; pool = '核心池'; }
-  else if (mid && (t.ret12m ?? 0) > 0.2) { tier = 'T2'; pool = '核心池'; }
-  else if (mid) { tier = 'T3'; pool = '备选池'; }
-  else if (z != null && z < 1.81) { tier = 'T5'; pool = '回避池'; }
-  return { tier, pool };
+
+  if (isFinancial(stock)) {
+    // 金融业：Altman Z / Piotroski F 不适用，改用「估值安全边际 + 盈利质量(ROE) + 12m动量」
+    const hasVal = f.pePct != null || f.pbPct != null;
+    // 深度价值：历史分位 <0.4，或显著破净 PB<0.8
+    const deepValue = hasVal && ((f.pePct != null && f.pePct < 0.4) || (f.pbPct != null && f.pbPct < 0.4) || (f.pb != null && f.pb < 0.8));
+    // 温和价值：破净 PB<1，或历史分位 <0.6
+    const mildValue = (f.pb != null && f.pb < 1) || (hasVal && ((f.pePct != null && f.pePct < 0.6) || (f.pbPct != null && f.pbPct < 0.6)));
+    const expensive = hasVal && ((f.pePct != null && f.pePct > 0.85) || (f.pbPct != null && f.pbPct > 0.85));
+    // 质量：银行以 ROE 为核心（结构性低于制造业，但优质行仍 ≥10%），ROIC≥8% 次之；破净本身不算质量
+    const quality = (f.roe != null && f.roe >= 0.10) || (f.roic != null && f.roic >= 0.08);
+    const momOk = (t.ret12m ?? 0) > 0;
+    if (deepValue && quality && momOk) { tier = 'T1'; pool = '核心池'; }
+    else if (deepValue && momOk) { tier = 'T2'; pool = '核心池'; }
+    else if ((deepValue || mildValue) && (quality || momOk)) { tier = 'T3'; pool = '备选池'; }
+    else if (expensive && !momOk) { tier = 'T5'; pool = '回避池'; }
+    // 其余 → 观察池 T4
+  } else {
+    const fs = piotroskiF(f);
+    const z = altmanZ(f);
+    const good = (fs != null && fs >= 7) && (z != null && z >= 2.99) && (f.pePct != null && f.pePct < 0.5) && (t.ret12m ?? 0) > 0;
+    const mid = (fs != null && fs >= 5) && (z != null && z >= 1.81) && (f.pePct == null || f.pePct < 0.85);
+    if (good) { tier = 'T1'; pool = '核心池'; }
+    else if (mid && (t.ret12m ?? 0) > 0.2) { tier = 'T2'; pool = '核心池'; }
+    else if (mid) { tier = 'T3'; pool = '备选池'; }
+    else if (z != null && z < 1.81) { tier = 'T5'; pool = '回避池'; }
+  }
+  return { tier, pool, isFinancial: isFinancial(stock) };
 }
 
 async function deepResearch(ticker, opts = {}) {
@@ -122,7 +142,7 @@ async function deepResearch(ticker, opts = {}) {
   L.push(`## 三、标的八维度深度研究`);
   L.push(`| 维度 | 结论 | 量化依据 |`); L.push(`|------|------|----------|`);
   L.push(`| 业务结构 | ${f.businessNote || '数据待补'} | 主营占比待补 |`);
-  L.push(`| 财务质量 | F-Score=${score.detail.fscore}/9，Altman Z=${score.detail.zscore == null ? '—' : round(score.detail.zscore, 2)} | ROE=${f.roe ?? '—'}%，ROIC=${f.roic ?? '—'}% |`);
+  L.push(`| 财务质量 | ${isFinancial(stock) ? 'F-Score / Altman Z 金融业不适用' : `F-Score=${score.detail.fscore}/9`}，Altman Z=${score.detail.zscore == null ? '—' : round(score.detail.zscore, 2)} | ROE=${f.roe != null ? round(f.roe * 100, 2) : '—'}%，ROIC=${f.roic != null ? round(f.roic * 100, 2) : '—'}% |`);
   L.push(`| 产能订单 | ${f.capacityNote || '数据待补'} | 资本开支增速待补 |`);
   L.push(`| 治理管理 | ${f.govNote || '数据待补'} | 前十大股东/股权结构待补 |`);
   L.push(`| 估值安全边际 | PE=${f.pe ?? '—'}，历史分位 ${round((f.pePct ?? 0.5) * 100)}%；PB=${f.pb ?? '—'} | 估值吸引力评分 ${score.radar.估值吸引力} |`);
@@ -172,7 +192,7 @@ async function deepResearch(ticker, opts = {}) {
     const saved = saveReport({ type: 'deep', ticker: stock.ticker, title: `深度研究 ${stock.name}`, markdown, meta: { rating: rating.tier, unified: score.scores.unified } });
     json.saved = saved.entry;
   }
-  return { ok: true, ticker: stock.ticker, name: stock.name, markdown, json };
+  return { ok: true, ticker: stock.ticker, name: stock.name, rating, markdown, json };
 }
 
 module.exports = { deepResearch, valuationScenarios, falsificationList, tierRating };

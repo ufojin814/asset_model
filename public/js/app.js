@@ -1,160 +1,292 @@
-// public/js/app.js — 前端交互
+// public/js/app.js — 前端交互（原生 JS，零依赖）
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const API = '';
 
-// ---------- Tab ----------
-$$('.tab').forEach(t => t.addEventListener('click', () => {
-  $$('.tab').forEach(x => x.classList.remove('active'));
-  $$('.panel').forEach(x => x.classList.remove('active'));
-  t.classList.add('active');
-  $('#tab-' + t.dataset.tab).classList.add('active');
-}));
+const ASSET_META = {
+  stock: { label: '股票', color: '#2f5bea' },
+  bond: { label: '债券', color: '#0ea5b7' },
+  realestate: { label: '房地产', color: '#e08a1e' },
+  gold: { label: '黄金', color: '#c8972f' },
+};
+const TIER_COLOR = { T1: 'tier-T1', T2: 'tier-T2', T3: 'tier-T3', T4: 'tier-T4', T5: 'tier-T5' };
+const TYPE_COLOR = { macro: '#2f5bea', selection: '#7c5cff', deep: '#0ea5b7' };
+
+// ---------- 工具 ----------
+function toast(msg, isErr) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isErr ? ' err' : '');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 2600);
+}
+async function api(path, opts) {
+  const r = await fetch(API + path, opts);
+  return r.json();
+}
+function el(tag, cls, html) { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+function pct(x) { return (x * 100).toFixed(1) + '%'; }
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); toast('已复制到剪贴板'); }
+  catch (e) { toast('复制失败：' + e.message, true); }
+}
+
+// ---------- Markdown 渲染（轻量） ----------
+function renderMarkdown(md) {
+  if (!md) return '';
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const lines = md.split('\n');
+  let h = '', i = 0, inCode = false, codeBuf = [];
+  const flushCode = () => { if (codeBuf.length) { h += '<pre><code>' + esc(codeBuf.join('\n')) + '</code></pre>'; codeBuf = []; } };
+  while (i < lines.length) {
+    const line = lines[i];
+    if (line.trim().startsWith('```')) {
+      if (inCode) { flushCode(); inCode = false; } else { inCode = true; }
+      i++; continue;
+    }
+    if (inCode) { codeBuf.push(line); i++; continue; }
+    const m = line.match(/^(#{1,4})\s+(.*)$/);
+    if (m) { h += `<h${m[1].length}>${inline(m[2])}</h${m[1].length}>`; i++; continue; }
+    if (/^\s*\|.+\|\s*$/.test(line) && i + 1 < lines.length && /^\s*\|[-:\s|]+\|\s*$/.test(lines[i + 1])) {
+      const head = line.split('|').slice(1, -1).map(c => c.trim());
+      i += 2; const rows = [];
+      while (i < lines.length && /^\s*\|.+\|\s*$/.test(lines[i])) { rows.push(lines[i].split('|').slice(1, -1).map(c => c.trim())); i++; }
+      h += '<table><thead><tr>' + head.map(c => `<th>${inline(c)}</th>`).join('') + '</tr></thead><tbody>' +
+        rows.map(r => '<tr>' + r.map(c => `<td>${inline(c)}</td>`).join('') + '</tr>').join('') + '</tbody></table>';
+      continue;
+    }
+    if (/^\s*>\s?/.test(line)) { h += '<blockquote>' + inline(line.replace(/^\s*>\s?/, '')) + '</blockquote>'; i++; continue; }
+    if (/^\s*[-*]\s+/.test(line)) {
+      const items = [];
+      while (i < lines.length && /^\s*[-*]\s+/.test(lines[i])) { items.push('<li>' + inline(lines[i].replace(/^\s*[-*]\s+/, '')) + '</li>'); i++; }
+      h += '<ul>' + items.join('') + '</ul>'; continue;
+    }
+    if (/^\s*\d+\.\s+/.test(line)) {
+      const items = [];
+      while (i < lines.length && /^\s*\d+\.\s+/.test(lines[i])) { items.push('<li>' + inline(lines[i].replace(/^\s*\d+\.\s+/, '')) + '</li>'); i++; }
+      h += '<ol>' + items.join('') + '</ol>'; continue;
+    }
+    if (line.trim() === '') { i++; continue; }
+    h += '<p>' + inline(line) + '</p>'; i++;
+  }
+  flushCode();
+  return h;
+}
+function inline(s) {
+  return s
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/`([^`]+?)`/g, '<code>$1</code>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+}
+
+// ---------- 雷达图（Canvas） ----------
+function drawRadar(canvas, dims) {
+  const dpr = window.devicePixelRatio || 1;
+  const size = 200;
+  canvas.width = size * dpr; canvas.height = size * dpr;
+  canvas.style.width = size + 'px'; canvas.style.height = size + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  const cx = size / 2, cy = size / 2, R = size / 2 - 28;
+  const n = dims.length;
+  ctx.clearRect(0, 0, size, size);
+  // 网格
+  for (let g = 1; g <= 4; g++) {
+    ctx.beginPath();
+    for (let k = 0; k <= n; k++) {
+      const a = -Math.PI / 2 + k * 2 * Math.PI / n;
+      const r = R * g / 4;
+      const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
+      k === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = '#eef1f7'; ctx.lineWidth = 1; ctx.stroke();
+  }
+  // 轴 + 标签
+  ctx.fillStyle = '#5a667e'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+  dims.forEach((d, k) => {
+    const a = -Math.PI / 2 + k * 2 * Math.PI / n;
+    const x = cx + R * Math.cos(a), y = cy + R * Math.sin(a);
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(x, y); ctx.strokeStyle = '#eef1f7'; ctx.stroke();
+    const lx = cx + (R + 14) * Math.cos(a), ly = cy + (R + 14) * Math.sin(a);
+    ctx.fillText(d.label, lx, ly + 3);
+  });
+  // 数据多边形
+  ctx.beginPath();
+  dims.forEach((d, k) => {
+    const a = -Math.PI / 2 + k * 2 * Math.PI / n;
+    const r = R * Math.max(0, Math.min(100, d.value)) / 100;
+    const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
+    k === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(47,91,234,.18)'; ctx.fill();
+  ctx.strokeStyle = '#2f5bea'; ctx.lineWidth = 2; ctx.stroke();
+  dims.forEach((d, k) => {
+    const a = -Math.PI / 2 + k * 2 * Math.PI / n;
+    const r = R * Math.max(0, Math.min(100, d.value)) / 100;
+    const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
+    ctx.beginPath(); ctx.arc(x, y, 2.5, 0, 2 * Math.PI); ctx.fillStyle = '#2f5bea'; ctx.fill();
+  });
+}
 
 // ---------- 宏观研判 ----------
-async function loadThemes() {
-  const r = await fetch(API + '/api/themes').then(x => x.json());
-  if (!r.ok) return;
-  const sel = $('#theme-select');
-  sel.innerHTML = r.themes.map(t => `<option value="${t.key}">${t.name}（${t.description}）</option>`).join('');
-}
 async function runMacro() {
-  $('#macro-result').innerHTML = '<div class="card">加载中…</div>';
-  const r = await fetch(API + '/api/macro').then(x => x.json());
-  if (!r.ok) { $('#macro-result').innerHTML = `<div class="card" style="color:#dc2626">${r.error}</div>`; return; }
-  $('#macro-dp').textContent = '数据提供方: ' + (r.macro ? 'local' : '') + ' · 已落库 ' + (r.saved?.file || '');
-  const m = r.macro;
-  let html = '<div class="card"><h2>因子原始信号（raw，+1=扩张/利好风险资产）</h2><table><tr><th>因子</th><th>信号</th></tr>';
-  for (const [k, v] of Object.entries(m.raw)) html += `<tr><td>${k}</td><td>${v.toFixed(3)}</td></tr>`;
-  html += '</table></div>';
-  for (const [aKey, aCfg] of Object.entries(m.assets)) {
-    html += `<div class="card"><h2>${aCfg.label}</h2><table><tr><th>期限</th><th>倾斜度T</th><th>看涨</th><th>震荡</th><th>看跌</th><th>结论</th></tr>`;
-    for (const h of ['short', 'mid', 'long']) {
-      const h2 = aCfg.byHorizon[h];
-      const cls = h2.stance === '看涨' ? 'up' : h2.stance === '看跌' ? 'down' : 'mid';
-      html += `<tr><td>${h2.label}</td><td>${h2.tilt}</td><td>${(h2.probs.看涨*100).toFixed(1)}%</td><td>${(h2.probs.震荡*100).toFixed(1)}%</td><td>${(h2.probs.看跌*100).toFixed(1)}%</td><td><span class="tag ${cls}">${h2.stance}</span></td></tr>`;
+  const grid = $('#macroGrid'); grid.innerHTML = '<div class="loading"><div class="spinner"></div>正在生成宏观研判…</div>';
+  try {
+    const d = await api('/api/macro');
+    if (!d.ok) { grid.innerHTML = '<div class="empty">' + (d.error || '生成失败') + '</div>'; return; }
+    const A = d.macro.assets;
+    grid.innerHTML = '';
+    for (const key of Object.keys(A)) {
+      const a = A[key]; const meta = ASSET_META[key] || { label: a.label, color: '#2f5bea' };
+      const card = el('div', 'asset-card');
+      const stanceColor = s => s === '看涨' ? 'stance-up' : s === '看跌' ? 'stance-down' : 'stance-mid';
+      let hz = '';
+      for (const hk of ['short', 'mid', 'long']) {
+        const h = a.byHorizon[hk]; const p = h.probs;
+        hz += `<div class="horizon"><div class="hz-top"><span class="hz-label">${h.label} · ${h.windows}</span><span class="hz-stance ${stanceColor(h.stance)}">${h.stance} · 看涨 ${pct(p['看涨'])}</span></div>
+          <div class="bar"><span class="seg bull" style="width:${p['看涨'] * 100}%"></span><span class="seg mid" style="width:${p['震荡'] * 100}%"></span><span class="seg bear" style="width:${p['看跌'] * 100}%"></span></div></div>`;
+      }
+      card.innerHTML = `<div class="asset-head"><span class="asset-name">${meta.label}</span><span class="asset-tag" style="background:${meta.color}">四资产研判</span></div>${hz}`;
+      grid.appendChild(card);
     }
-    html += '</table></div>';
-  }
-  $('#macro-result').innerHTML = html;
+  } catch (e) { grid.innerHTML = '<div class="empty">请求异常：' + e.message + '</div>'; }
 }
 
-// ---------- 主题选股 ----------
-async function runSelect() {
-  const theme = $('#theme-select').value;
-  const topN = $('#topn').value || 3;
-  $('#select-result').innerHTML = '<div class="card">加载中…</div>';
-  const r = await fetch(API + `/api/select?theme=${encodeURIComponent(theme)}&topN=${topN}`).then(x => x.json());
-  if (!r.ok) { $('#select-result').innerHTML = `<div class="card" style="color:#dc2626">${r.error}</div>`; return; }
-  let html = '';
-  r.top.forEach((s, i) => {
-    html += `<div class="stock-card"><h3>${i+1}. ${s.name}（${s.ticker}） <span class="pill">统一评分 ${s.scores.unified}</span></h3>`;
-    html += `<div class="radar-wrap"><canvas id="radar-${i}" width="240" height="240"></canvas>`;
-    html += `<div><table><tr><th>维度</th><th>评分</th></tr>`;
-    html += `<tr><td>基本面</td><td>${s.scores.fundamental}</td></tr><tr><td>技术面</td><td>${s.scores.technical}</td></tr><tr><td>消息面</td><td>${s.scores.sentiment}</td></tr></table>`;
-    html += `<div style="margin-top:6px">${bar('财务健康',s.radar.财务健康)}${bar('安全边际',s.radar.安全边际)}${bar('估值吸引力',s.radar.估值吸引力)}${bar('价格动量',s.radar.价格动量)}${bar('低波质量',s.radar.低波质量)}${bar('消息情绪',s.radar.消息情绪)}</div></div></div>`;
-    html += `<p style="color:#374151">${s.conclusion}</p>`;
-    if (s.news && s.news.length) html += `<p class="hint">近期消息：${s.news.slice(0,3).map(n=>n.title).join('；')}</p>`;
-    html += `</div>`;
-  });
-  html += `<div class="card"><h2>复制清单（代码\\t名称）</h2><div class="copy-box" id="copylist">${r.copyList}</div><button class="btn" onclick="copyText('copylist')">复制</button></div>`;
-  $('#select-result').innerHTML = html;
-  r.top.forEach((s, i) => drawRadar($('#radar-' + i), ['财务健康','安全边际','估值吸引力','价格动量','低波质量','消息情绪'], [s.radar.财务健康,s.radar.安全边际,s.radar.估值吸引力,s.radar.价格动量,s.radar.低波质量,s.radar.消息情绪]));
-}
-function bar(label, v) {
-  return `<div style="display:flex;align-items:center;gap:8px;margin:3px 0;font-size:12px"><span style="width:70px">${label}</span><span class="bar"><i style="width:${v}%"></i></span><span>${v}</span></div>`;
+// ---------- 主题选股（NL） ----------
+async function runSelection() {
+  const text = $('#selInput').value.trim();
+  if (!text) { toast('请先输入研究需求', true); return; }
+  const box = $('#selResult'); box.innerHTML = '<div class="loading"><div class="spinner"></div>Hermes 正在解析意图并筛选标的…</div>';
+  $('#btnSel').disabled = true;
+  try {
+    const d = await api('/api/nl-themes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text, topN: 3 }) });
+    if (!d.ok) { box.innerHTML = '<div class="empty">' + (d.error || '解析失败') + (d.intent ? '<br>识别到的主题：' + (d.intent.themes || []).join('、') : '') + '</div>'; return; }
+    box.innerHTML = '';
+    if (!d.themes.length) { box.innerHTML = '<div class="empty">未能从输入识别出主题板块，请换种说法。</div>'; return; }
+    d.themes.forEach(th => {
+      if (!th.ok) { box.appendChild(el('div', 'empty', '主题「' + (th.themeKey || '') + '」无数据：' + (th.error || ''))); return; }
+      const card = el('div', 'theme-card');
+      let rows = '', radarDims = null;
+      (th.top || []).forEach((s, idx) => {
+        rows += `<div class="stock-row"><div class="stock-rank ${idx === 0 ? 'r-top' : ''}">${idx + 1}</div>
+          <div class="stock-main"><div class="stock-name">${s.name}</div><div class="stock-code">${s.ticker}</div></div>
+          <div class="score-bar"><i style="width:${Math.min(100, s.scores.unified)}%"></i></div>
+          <div class="score-num">${s.scores.unified}</div></div>`;
+        if (idx === 0) radarDims = s.radar;
+      });
+      card.innerHTML = `<h3><i class="fas fa-layer-group" style="color:var(--brand)"></i> ${th.theme}</h3>
+        <p class="theme-desc">${th.description || ''} ｜ 共 ${th.count} 只，展示 Top${th.top.length}</p>
+        <div class="stock-grid"><div>${rows}</div><div class="radar-wrap"><canvas></canvas></div></div>
+        <div style="margin-top:12px"><button class="btn" data-copy="${encodeURIComponent(th.copyList || '')}"><i class="fas fa-copy"></i> 复制清单</button></div>`;
+      box.appendChild(card);
+      if (radarDims) {
+        const dims = [
+          { label: '财务健康', value: radarDims['财务健康'] }, { label: '安全边际', value: radarDims['安全边际'] },
+          { label: '估值吸引', value: radarDims['估值吸引力'] }, { label: '价格动量', value: radarDims['价格动量'] },
+          { label: '低波质量', value: radarDims['低波质量'] }, { label: '消息情绪', value: radarDims['消息情绪'] },
+        ];
+        drawRadar($('canvas', card), dims);
+      }
+    });
+    $$('[data-copy]', box).forEach(b => b.onclick = () => copyText(decodeURIComponent(b.dataset.copy)));
+  } catch (e) { box.innerHTML = '<div class="empty">请求异常：' + e.message + '</div>'; }
+  finally { $('#btnSel').disabled = false; }
 }
 
-// ---------- 深度研究 ----------
-async function runDeep(ticker) {
-  ticker = ticker || $('#ticker-input').value.trim();
-  if (!ticker) return;
-  $('#deep-result').innerHTML = '<div class="card">加载中…</div>';
-  const r = await fetch(API + `/api/deep?ticker=${encodeURIComponent(ticker)}`).then(x => x.json());
-  if (!r.ok) { $('#deep-result').innerHTML = `<div class="card" style="color:#dc2626">${r.error}</div>`; return; }
-  $('#deep-result').innerHTML = `<div class="card"><h2>${r.name}（${r.ticker}）深度研究报告</h2><div class="md-body">${renderMarkdown(r.markdown)}</div></div>`;
+// ---------- 深度研究（NL，多股） ----------
+async function runDeep() {
+  const text = $('#deepInput').value.trim();
+  if (!text) { toast('请先输入研究内容', true); return; }
+  const box = $('#deepResult'); box.innerHTML = '<div class="loading"><div class="spinner"></div>Hermes 正在识别所有目标股票并行深度研究…</div>';
+  $('#btnDeep').disabled = true;
+  try {
+    const d = await api('/api/nl-deep', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) });
+    if (!d.ok) { box.innerHTML = '<div class="empty">' + (d.error || '解析失败') + '</div>'; return; }
+    box.innerHTML = '';
+    if (!d.results || !d.results.length) { box.innerHTML = '<div class="empty">未能从输入识别到股票标的，请列出具体股票代码或名称。</div>'; return; }
+    d.results.forEach(r => {
+      const card = el('div', 'report-card');
+      if (!r.ok) {
+        card.innerHTML = `<div class="report-head"><div><div class="rn">${r.name || r.raw || '未知'}</div></div><span class="tier-badge tier-T5">未分析</span></div>
+          <div class="md"><p style="color:#d83a3a">${r.error || '无法解析标的'}</p></div>`;
+        box.appendChild(card); return;
+      }
+      const tier = (r.rating && r.rating.tier) || 'T5';
+      const tierName = (r.rating && r.rating.tierName) || '';
+      card.innerHTML = `<div class="report-head"><div><div class="rn">${r.name || r.code}</div><div class="rc">${r.code}</div></div>
+        <span class="tier-badge ${TIER_COLOR[tier] || 'tier-T5'}">${tier} ${tierName}</span></div>
+        <div class="md">${renderMarkdown(r.markdown)}</div>`;
+      box.appendChild(card);
+    });
+  } catch (e) { box.innerHTML = '<div class="empty">请求异常：' + e.message + '</div>'; }
+  finally { $('#btnDeep').disabled = false; }
 }
 
 // ---------- 研究资料库 ----------
 async function loadKB() {
-  const r = await fetch(API + '/api/kb').then(x => x.json());
-  if (!r.ok) return;
-  $('#kb-stats').textContent = '总量 ' + (r.stats?.total||0) + ' · ' + JSON.stringify(r.stats?.byType||{});
-  const label = { macro:'宏观研判', selection:'选股', deep:'深度研究' };
-  let html = '';
-  r.entries.forEach(e => {
-    html += `<div class="kb-item" data-file="${e.file}"><div><b>${e.title}</b><br><span class="kb-meta">${label[e.type]||e.type} · ${e.timestamp} · ${e.ticker}</span></div><span class="pill">${e.type}</span></div>`;
-  });
-  $('#kb-list').innerHTML = html || '<div class="card">暂无研究记录</div>';
-  $$('.kb-item').forEach(it => it.addEventListener('click', () => viewReport(it.dataset.file)));
+  const grid = $('#kbGrid'); grid.innerHTML = '<div class="empty">加载中…</div>';
+  try {
+    const d = await api('/api/kb');
+    if (!d.ok) { grid.innerHTML = '<div class="empty">加载失败</div>'; return; }
+    const entries = d.entries || [];
+    if (!entries.length) { grid.innerHTML = '<div class="empty">暂无研究报告。</div>'; return; }
+    grid.innerHTML = '';
+    entries.forEach(e => {
+      const item = el('div', 'kb-item');
+      const color = TYPE_COLOR[e.type] || '#2f5bea';
+      item.innerHTML = `<span class="kb-type" style="background:${color}">${e.type}</span>
+        <div class="kb-title">${e.title || e.file}</div>
+        <div class="kb-meta">${e.ticker || ''} · ${e.ts || ''}</div>`;
+      item.onclick = () => viewKB(e.file);
+      grid.appendChild(item);
+    });
+  } catch (e) { grid.innerHTML = '<div class="empty">请求异常：' + e.message + '</div>'; }
 }
-async function viewReport(file) {
-  const r = await fetch(API + '/api/kb/' + encodeURIComponent(file)).then(x => x.json());
-  if (!r.ok) return;
-  $('#kb-view').innerHTML = `<div class="card"><h2>${file}</h2><div class="md-body">${renderMarkdown(r.content)}</div></div>`;
+async function viewKB(file) {
+  const view = $('#kbView'); view.classList.remove('hidden'); view.innerHTML = '<div class="loading"><div class="spinner"></div>加载报告…</div>';
+  const d = await api('/api/kb/' + encodeURIComponent(file));
+  if (d.ok) view.innerHTML = '<div class="md">' + renderMarkdown(d.content) + '</div>';
+  else view.innerHTML = '<div class="empty">读取失败</div>';
+  view.scrollIntoView({ behavior: 'smooth' });
 }
 
-// ---------- 雷达图 ----------
-function drawRadar(canvas, labels, values) {
-  const ctx = canvas.getContext('2d');
-  const cx = canvas.width/2, cy = canvas.height/2, R = 90;
-  const n = labels.length;
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  // 网格
-  for (let ring=1; ring<=5; ring++) {
-    ctx.beginPath();
-    for (let i=0;i<n;i++){const a=-Math.PI/2+i*2*Math.PI/n;const r=R*ring/5;ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a));}
-    ctx.closePath(); ctx.strokeStyle='#e5e7eb'; ctx.stroke();
+// ---------- 数据源检测 ----------
+async function checkSource() {
+  try {
+    const d = await api('/api/health');
+    const dp = d.dataProvider || 'local';
+    const real = dp === 'auto' || dp === 'wind' || dp === 'akshare';
+    $('#srcName').textContent = '数据源：' + (real ? '真实数据 (' + dp + ')' : '演示数据');
+    $('#srcState').textContent = 'Hermes · Wind' + (real ? ' · 已接入' : '');
+    $('#srcDot').className = 'agent-dot ' + (real ? 'online' : 'checking');
+    $('#dpPill').innerHTML = '<i class="fas fa-database"></i> ' + (real ? '真实数据 · ' + dp : '演示数据');
+  } catch (e) {
+    $('#srcName').textContent = '数据源：离线';
+    $('#srcDot').className = 'agent-dot offline';
   }
-  // 轴
-  for (let i=0;i<n;i++){const a=-Math.PI/2+i*2*Math.PI/n;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+R*Math.cos(a),cy+R*Math.sin(a));ctx.strokeStyle='#cbd5e1';ctx.stroke();}
-  // 数据
-  ctx.beginPath();
-  for (let i=0;i<n;i++){const a=-Math.PI/2+i*2*Math.PI/n;const r=R*(Math.max(0,Math.min(100,values[i]))/100);ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a));}
-  ctx.closePath(); ctx.fillStyle='rgba(37,99,235,.18)'; ctx.fill(); ctx.strokeStyle='#2563eb'; ctx.lineWidth=2; ctx.stroke();
-  // 标签
-  ctx.fillStyle='#374151'; ctx.font='11px sans-serif';
-  for (let i=0;i<n;i++){const a=-Math.PI/2+i*2*Math.PI/n;const lx=cx+(R+14)*Math.cos(a),ly=cy+(R+14)*Math.sin(a);ctx.textAlign='center';ctx.fillText(labels[i],lx,ly);}
 }
 
-// ---------- 复制 ----------
-function copyText(id){const el=document.getElementById(id);if(!el)return;navigator.clipboard.writeText(el.innerText).then(()=>{const b=event.target;b.textContent='已复制';setTimeout(()=>b.textContent='复制',1200);});}
-
-// ---------- 极简 Markdown 渲染 ----------
-function renderMarkdown(md){
-  if(!md)return'';
-  const lines=md.split('\n');let html='';let inCode=false,code='';
-  const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  for(let raw of lines){
-    const line=raw;
-    if(line.startsWith('```')){if(inCode){html+=`<pre>${esc(code)}</pre>`;code='';inCode=false;}else{inCode=true;}continue;}
-    if(inCode){code+=line+'\n';continue;}
-    if(line.startsWith('---')){html+='<hr>';continue;}
-    if(line.startsWith('>')){html+=`<blockquote>${inline(line.slice(1).trim())}</blockquote>`;continue;}
-    if(line.startsWith('### ')){html+=`<h3>${inline(line.slice(4))}</h3>`;continue;}
-    if(line.startsWith('## ')){html+=`<h2>${inline(line.slice(3))}</h2>`;continue;}
-    if(line.startsWith('# ')){html+=`<h1>${inline(line.slice(2))}</h1>`;continue;}
-    if(/^\|/.test(line)){ // 表格
-      const cells=line.split('|').slice(1,-1).map(c=>c.trim());
-      if(/^[-: |]+$/.test(line))continue; // 分隔行
-      html+= cells.map(c=>`<td>${inline(c)}</td>`).join('');
-      if(!html.endsWith('</tr>'))html='<table>'+html;
-      html=html.replace(/<td>/, '<tr><td>').replace(/<\/td>$/, '</td></tr>');
-      continue;
-    }
-    if(/^[-*] /.test(line)){html+=`<li>${inline(line.slice(2))}</li>`;continue;}
-    if(line.trim()===''){html+='';continue;}
-    html+=`<p>${inline(line)}</p>`;
-  }
-  if(inCode)html+=`<pre>${esc(code)}</pre>`;
-  return html;
+// ---------- 标签切换 ----------
+const PAGE_META = {
+  macro: ['宏观研判', '多因子信号聚合 · 股/债/房地产/黄金 短中长三档概率'],
+  selection: ['主题选股', '自然语言描述需求，Hermes 自动拆分主题并筛选标的'],
+  deep: ['深度研究', '自然语言段落，Hermes 识别全部目标股票并逐一深入'],
+  kb: ['研究资料库', '所有研究结论按 类型_标的_时间戳 落盘，可回溯'],
+};
+function switchPage(p) {
+  $$('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === p));
+  $$('.page').forEach(s => s.classList.add('hidden'));
+  $('#page-' + p).classList.remove('hidden');
+  $('#pageTitle').textContent = PAGE_META[p][0];
+  $('#pageSub').textContent = PAGE_META[p][1];
+  if (p === 'kb') loadKB();
 }
-function inline(s){return s.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/`(.+?)`/g,'<code>$1</code>');}
 
 // ---------- 绑定 ----------
-$('#btn-macro').addEventListener('click', runMacro);
-$('#btn-select').addEventListener('click', runSelect);
-$('#btn-deep').addEventListener('click', () => runDeep());
-$('#btn-kb').addEventListener('click', loadKB);
-loadThemes();
-loadKB();
+$('#btnMacro').onclick = runMacro;
+$('#btnSel').onclick = runSelection;
+$('#btnDeep').onclick = runDeep;
+$('#btnKb').onclick = loadKB;
+$$('.nav-item').forEach(n => n.onclick = () => switchPage(n.dataset.page));
+checkSource();

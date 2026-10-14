@@ -1,79 +1,94 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>资产配置与股票配置研究平台 · Asset Model</title>
-<link rel="stylesheet" href="/css/style.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>资产配置与股票配置研究平台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="/css/style.css?v=20261013">
 </head>
 <body>
-<header class="topbar">
-  <div class="brand">📊 资产配置与股票配置研究平台</div>
-  <div class="sub">宏观研判 · 主题选股 · 深度研究（Serenity 框架）· 零依赖</div>
-</header>
-
-<nav class="tabs">
-  <button class="tab active" data-tab="macro">① 宏观研判</button>
-  <button class="tab" data-tab="select">② 主题选股</button>
-  <button class="tab" data-tab="deep">③ 深度研究</button>
-  <button class="tab" data-tab="kb">④ 研究资料库</button>
-</nav>
-
-<main>
-  <!-- 宏观研判 -->
-  <section class="panel active" id="tab-macro">
-    <div class="card">
-      <h2>宏观研判板块</h2>
-      <p class="hint">基于增长/流动性/货币政策/地缘政治/科技突破等现状，研判股、债、房地产、黄金在
-        <b>短期(≤3月)</b>、<b>中期(3月-1年)</b>、<b>长期(1年以上)</b> 的概率走势。概率由多因子加权信号 + 潜变量正态模型推导，因子均有学术支撑。</p>
-      <button class="btn primary" id="btn-macro">运行宏观研判</button>
-      <span class="dp-badge" id="macro-dp"></span>
+<div class="app-layout">
+  <!-- 侧边栏 -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-mark"><i class="fas fa-chart-pie"></i></span>
+      <span class="brand-text">资产配置研究</span>
     </div>
-    <div id="macro-result"></div>
-  </section>
-
-  <!-- 主题选股 -->
-  <section class="panel" id="tab-select">
-    <div class="card">
-      <h2>主题选股板块</h2>
-      <p class="hint">指定研究主题 → 筛选对应标的 → 三维评分（基本面 Piotroski/Altman、技术面动量/低波、消息面 Loughran-McDonald）→ 统一加权 → 每主题 Top3，含特征雷达图与复制清单。</p>
-      <div class="row">
-        <select id="theme-select"></select>
-        <input type="number" id="topn" value="3" min="1" max="10" style="width:70px" title="取前N" />
-        <button class="btn primary" id="btn-select">运行选股</button>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">研究板块</div>
+      <div class="nav-item active" data-page="macro"><span class="nav-icon"><i class="fas fa-gauge-high"></i></span><span class="nav-label">宏观研判</span></div>
+      <div class="nav-item" data-page="selection"><span class="nav-icon"><i class="fas fa-tags"></i></span><span class="nav-label">主题选股</span><span class="nav-badge">NL</span></div>
+      <div class="nav-item" data-page="deep"><span class="nav-icon"><i class="fas fa-microscope"></i></span><span class="nav-label">深度研究</span><span class="nav-badge">NL</span></div>
+      <div class="nav-item" data-page="kb"><span class="nav-icon"><i class="fas fa-archive"></i></span><span class="nav-label">研究资料库</span></div>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="agent-dot online" id="srcDot"></div>
+      <div class="agent-meta">
+        <div class="agent-name" id="srcName">数据源：检测中…</div>
+        <div class="agent-state" id="srcState">Hermes · Wind</div>
       </div>
     </div>
-    <div id="select-result"></div>
-  </section>
+  </aside>
 
-  <!-- 深度研究 -->
-  <section class="panel" id="tab-deep">
-    <div class="card">
-      <h2>股票深度研究板块（Serenity 框架）</h2>
-      <p class="hint">严格遵循「白毛股神 serenity」九角色对抗式研究框架：宏观定位→行业→八维度个股→基本面证伪→五情景估值→量化风控→组合配置→终稿。输入标的代码运行。</p>
-      <div class="row">
-        <input id="ticker-input" placeholder="请输入标的代码，如 300308.SZ" style="width:240px" />
-        <button class="btn primary" id="btn-deep">运行深度研究</button>
+  <!-- 主区 -->
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <h1 class="page-title" id="pageTitle">宏观研判</h1>
+        <p class="page-sub" id="pageSub">多因子信号聚合 · 股/债/房地产/黄金 短中长三档概率</p>
       </div>
-      <div id="deep-quick"></div>
-    </div>
-    <div id="deep-result"></div>
-  </section>
+      <div class="topbar-right">
+        <span class="pill" id="dpPill"><i class="fas fa-database"></i> 真实数据</span>
+      </div>
+    </header>
 
-  <!-- 研究资料库 -->
-  <section class="panel" id="tab-kb">
-    <div class="card">
-      <h2>研究资料库</h2>
-      <p class="hint">所有研究报告按 <b>类型_标的_时间戳</b> 落盘，可回溯检索。点击查看正文。</p>
-      <button class="btn" id="btn-kb">刷新资料库</button>
-      <span id="kb-stats" class="dp-badge"></span>
-    </div>
-    <div id="kb-list"></div>
-    <div id="kb-view"></div>
-  </section>
-</main>
+    <section class="page" id="page-macro">
+      <div class="toolbar">
+        <button class="btn btn-primary" id="btnMacro"><i class="fas fa-bolt"></i> 生成宏观研判</button>
+        <span class="hint">基于收益率曲线 / 估值ERP / 实际利率 / PMI / 流动性 / 信用利差 / 通胀 / 科技 多因子信号，概率由潜变量正态模型映射（学术支撑）。</span>
+      </div>
+      <div class="asset-grid" id="macroGrid"><div class="empty">点击「生成宏观研判」查看四资产概率。</div></div>
+    </section>
 
-<footer class="foot">仅供研究使用 · 所有结论须以可核验数据支撑，严禁虚构 · Serenity 投资研究框架</footer>
-<script src="/js/app.js"></script>
+    <section class="page hidden" id="page-selection">
+      <div class="nl-box">
+        <label class="nl-label"><i class="fas fa-comment-dots"></i> 自然语言描述你的研究需求</label>
+        <textarea id="selInput" class="nl-text" rows="3" placeholder="例如：对比光通信和芯片半导体板块，哪个更值得配置？或者：帮我筛一下商业航天和黄金里最值得关注的标的"></textarea>
+        <div class="nl-actions">
+          <button class="btn btn-primary" id="btnSel"><i class="fas fa-search"></i> 分析主题</button>
+          <span class="hint">后台 Hermes 会解析你的语句，自动拆分为对应主题板块并筛选标的。</span>
+        </div>
+      </div>
+      <div class="result" id="selResult"></div>
+    </section>
+
+    <section class="page hidden" id="page-deep">
+      <div class="nl-box">
+        <label class="nl-label"><i class="fas fa-comment-dots"></i> 输入一段文字或列出多只股票</label>
+        <textarea id="deepInput" class="nl-text" rows="4" placeholder="例如：对贵州茅台、招商银行、宁德时代做深度研究；或者粘贴一段包含多只标的的分析需求，系统会自动识别所有目标股票并逐一深入。"></textarea>
+        <div class="nl-actions">
+          <button class="btn btn-primary" id="btnDeep"><i class="fas fa-flask"></i> 开始研究</button>
+          <span class="hint">后台 Hermes 会识别段落中的所有目标股票，对每一只并行执行 Serenity 框架深度研究。</span>
+        </div>
+      </div>
+      <div class="result" id="deepResult"></div>
+    </section>
+
+    <section class="page hidden" id="page-kb">
+      <div class="toolbar">
+        <button class="btn" id="btnKb"><i class="fas fa-sync"></i> 刷新资料库</button>
+        <span class="hint">所有研究结论按 类型_标的_时间戳 落盘，可回溯。</span>
+      </div>
+      <div class="kb-grid" id="kbGrid"><div class="empty">加载中…</div></div>
+      <div id="kbView" class="kb-view hidden"></div>
+    </section>
+  </main>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+<script src="/js/app.js?v=20261013"></script>
 </body>
 </html>

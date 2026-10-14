@@ -9,6 +9,16 @@ const { getProvider } = require('./dataProvider');
 const { scoreStockNews } = require('./sentiment');
 const { clamp, round, mean, std, zscore } = require('./utils');
 
+// 行业识别：金融（银行/证券/保险等）不适用 Altman Z / Piotroski F —— 二者基于「营运资本/总资产」
+// 等制造业口径，金融机构负债结构与制造业迥异，套用会得到 Z≈0 的伪「违约」信号。故对金融业
+// 单独走「估值+盈利质量(ROE/PB)+动量」评级口径，并在评分中把这两项置中性（50），避免误杀。
+function isFinancial(stock) {
+  // 同时用 行业 + 主题 + 名称 判定：Wind 对部分标的返回的行业字段可能为空，
+  // 但 A 股金融股名称稳定含「银行/证券/保险」等字样，纳入名称可兜底识别。
+  const s = ((stock.industry || '') + ' ' + (stock.theme || '') + ' ' + (stock.name || '')).toLowerCase();
+  return /银行|金融|证券|保险|信托|基金|资管|投行|财务公司|货币|capital/.test(s);
+}
+
 // ---------- 基本面子项 ----------
 function piotroskiF(f) {
   if (!f) return null;
@@ -87,8 +97,10 @@ async function scoreStock(stock) {
   const f = stock.fundamentals || {};
   const t = stock.technicals || {};
   const news = stock.news || [];
-  const fscore = piotroskiF(f);
-  const z = altmanZ(f);
+  // 金融业不适用 Altman Z / Piotroski F → 置 null，使对应子项回到中性 50 分
+  const isFin = isFinancial(stock);
+  const fscore = isFin ? null : piotroskiF(f);
+  const z = isFin ? null : altmanZ(f);
   const sub = {
     财务健康: fscore == null ? 50 : round(fscore / 9 * 100, 1),
     安全边际: zToScore(z),
@@ -158,4 +170,4 @@ async function selectStocks(themeKey, opts = {}) {
   };
 }
 
-module.exports = { selectStocks, scoreStock, piotroskiF, altmanZ, W };
+module.exports = { selectStocks, scoreStock, piotroskiF, altmanZ, isFinancial, W };

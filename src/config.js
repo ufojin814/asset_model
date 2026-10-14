@@ -32,7 +32,7 @@ const config = {
   framework: loadJson('research-framework.json', {}),
   macroModel: loadJson('macro-indicators.json', {}),
   // 数据提供方类型：local | akshare | wind（默认 local，演示数据）
-  dataProvider: process.env.AM_DATAPROVIDER || 'local',
+  dataProvider: process.env.AM_DATAPROVIDER || 'auto',
   port: parseInt(process.env.PORT || '3300', 10),
 };
 

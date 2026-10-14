@@ -1,5 +1,5 @@
 // server.js — 原生 Node.js HTTP 服务（零依赖）
-// 提供三大研究板块 API + 研究资料库浏览 + 静态前端托管。
+// 提供三大研究板块 API + 自然语言入口（NL 解析经 Hermes）+ 研究资料库浏览 + 静态前端托管。
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -9,6 +9,7 @@ const { analyzeMacro, summarizeMacro } = require('./src/macroAnalyzer');
 const { selectStocks } = require('./src/stockSelector');
 const { deepResearch } = require('./src/deepResearch');
 const { saveReport, listReports, getReport, stats } = require('./src/researchDB');
+const { parseIntent, getAliasMap } = require('./src/nlIntake');
 const { isoStamp } = require('./src/utils');
 
 const MIME = {
@@ -28,6 +29,14 @@ function sendFile(res, file) {
     if (err) { res.writeHead(404); res.end('Not found'); return; }
     res.writeHead(200, { 'Content-Type': MIME[path.extname(file)] || 'application/octet-stream' });
     res.end(data);
+  });
+}
+function readBody(req) {
+  return new Promise((resolve) => {
+    let data = '';
+    req.on('data', c => { data += c; if (data.length > 1e6) req.destroy(); });
+    req.on('end', () => resolve(data));
+    req.on('error', () => resolve(''));
   });
 }
 
@@ -77,10 +86,52 @@ function buildSelectionMarkdown(sel) {
   return L.join('\n');
 }
 
+// ---------- 自然语言入口 ----------
+async function handleNLThemes(text, topN) {
+  const intent = await parseIntent(text);
+  if (!intent.themes.length) return { ok: false, error: '未能从输入识别出主题板块', intent };
+  const themes = [];
+  const saved = [];
+  for (const themeKey of intent.themes) {
+    const sel = await selectStocks(themeKey, { topN: topN || 3 });
+    if (sel.ok) {
+      const md = buildSelectionMarkdown(sel);
+      const s = saveReport({ type: 'selection', ticker: themeKey, title: `选股 ${sel.theme}`, markdown: md, meta: { topN: topN || 3, count: sel.count, fromNL: true } });
+      sel.saved = s.entry;
+      themes.push(sel);
+      saved.push(s.entry);
+    } else {
+      themes.push({ themeKey, ok: false, error: sel.error });
+    }
+  }
+  return { ok: true, intent, themes, saved };
+}
+
+async function handleNLDeep(text) {
+  const intent = await parseIntent(text);
+  if (!intent.tickers.length) return { ok: false, error: '未能从输入识别出股票标的', intent };
+  const alias = getAliasMap();
+  const resolved = intent.tickers.map(t => {
+    const s = String(t).match(/^(\d{6}\.(?:SH|SZ))$/i);
+    if (s) return { raw: t, code: s[1].toUpperCase(), name: alias.codeToName[s[1].toUpperCase()] || s[1] };
+    if (alias.nameToCode[t]) return { raw: t, code: alias.nameToCode[t], name: t };
+    const partial = Object.keys(alias.nameToCode).find(n => n.includes(t) || t.includes(n));
+    if (partial) return { raw: t, code: alias.nameToCode[partial], name: partial };
+    return { raw: t, code: null, name: t };
+  });
+  const tasks = resolved.map(async r => {
+    if (!r.code) return { ...r, ok: false, error: '无法解析为已知标的代码（演示数据集中无此标的）' };
+    const dr = await deepResearch(r.code); // deepResearch 内部已落库
+    return { ...r, ok: dr.ok, rating: dr.rating, markdown: dr.markdown, json: dr.json, error: dr.error };
+  });
+  const results = await Promise.all(tasks);
+  return { ok: true, intent, results };
+}
+
 // ---------- API 处理 ----------
 async function handleApi(req, res, url) {
   const q = url.searchParams;
-  if (url.pathname === '/api/health') return sendJSON(res, { ok: true, ts: Date.now(), dataProvider: config.dataProvider });
+  if (url.pathname === '/api/health') return sendJSON(res, { ok: true, ts: Date.now(), dataProvider: config.dataProvider, hermes: 'ready' });
 
   if (url.pathname === '/api/themes') {
     const themes = await getProvider().getThemeTickers();
@@ -114,6 +165,23 @@ async function handleApi(req, res, url) {
     const r = await deepResearch(ticker);
     if (!r.ok) return sendJSON(res, r, 400);
     return sendJSON(res, r);
+  }
+
+  // —— 自然语言入口 ——
+  if (url.pathname === '/api/nl-themes' && req.method === 'POST') {
+    let body = {};
+    try { body = JSON.parse(await readBody(req) || '{}'); } catch (e) {}
+    if (!body.text || !body.text.trim()) return sendJSON(res, { ok: false, error: '缺少 text 字段' }, 400);
+    const r = await handleNLThemes(body.text, body.topN || 3);
+    return sendJSON(res, r, r.ok ? 200 : 400);
+  }
+
+  if (url.pathname === '/api/nl-deep' && req.method === 'POST') {
+    let body = {};
+    try { body = JSON.parse(await readBody(req) || '{}'); } catch (e) {}
+    if (!body.text || !body.text.trim()) return sendJSON(res, { ok: false, error: '缺少 text 字段' }, 400);
+    const r = await handleNLDeep(body.text);
+    return sendJSON(res, r, r.ok ? 200 : 400);
   }
 
   if (url.pathname === '/api/kb' && req.method === 'GET') {
