@@ -74,7 +74,7 @@ function buildSelectionMarkdown(sel) {
     L.push(`### ${i + 1}. ${tag}${s.name}（${s.ticker}）  统一评分 ${s.scores.unified}`);
     L.push(`- 基本面 ${s.scores.fundamental} / 技术面 ${s.scores.technical} / 消息面 ${s.scores.sentiment}`);
     L.push(`- 雷达维度：财务健康 ${s.radar.财务健康}｜安全边际 ${s.radar.安全边际}｜估值吸引力 ${s.radar.估值吸引力}｜价格动量 ${s.radar.价格动量}｜低波质量 ${s.radar.低波质量}｜消息情绪 ${s.radar.消息情绪}`);
-    L.push(`- 最大优势点：${s.best.label}（${s.best.value}）｜最大风险点：${s.worst.label}（${s.worst.value}）`);
+    L.push(`- 最大优势点：${s.best.text}｜最大风险点：${s.worst.text}`);
     L.push(`- 结论：${s.conclusion}`);
     if (s.news && s.news.length) L.push(`- 近期消息：${s.news.slice(0, 3).map(n => n.title).join('；')}`);
     L.push('');

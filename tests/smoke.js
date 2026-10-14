@@ -35,7 +35,7 @@ const { heuristicParse, getAliasMap } = require('../src/nlIntake');
     const sel = await selectStocks(theme, { topN: 3 });
     ok(`选股[${theme}]成功`, sel.ok && sel.top.length > 0);
     ok(`选股[${theme}]Top3含雷达维度`, sel.top[0] && Object.keys(sel.top[0].radar).length === 6);
-    ok(`选股[${theme}]含最大优势/风险点`, sel.top[0] && sel.top[0].best && sel.top[0].worst && sel.top[0].best.label && sel.top[0].worst.label);
+    ok(`选股[${theme}]含最大优势/风险点(具体表述)`, sel.top[0] && sel.top[0].best && sel.top[0].worst && sel.top[0].best.text && sel.top[0].worst.text);
     ok(`选股[${theme}]含复制清单`, !!sel.copyList);
   }
 

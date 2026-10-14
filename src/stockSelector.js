@@ -129,16 +129,75 @@ async function scoreStock(stock) {
   const radarEntries = Object.entries(radar);
   let best = radarEntries[0], worst = radarEntries[0];
   for (const e of radarEntries) { if (e[1] > best[1]) best = e; if (e[1] < worst[1]) worst = e; }
+  const bestText = describeDim(best[0], stock, 'best');
+  const worstText = describeDim(worst[0], stock, 'worst');
   return {
     ticker: stock.ticker, name: stock.name, industry: stock.industry || '', theme: stock.theme || '',
     scores: { fundamental, technical, sentiment, unified, sub },
     radar,
-    best: { label: best[0], value: best[1] },
-    worst: { label: worst[0], value: worst[1] },
+    best: { label: best[0], value: best[1], text: bestText },
+    worst: { label: worst[0], value: worst[1], text: worstText },
     detail: { fscore, zscore: z, pe: f.pe, pb: f.pb, roe: f.roe, roic: f.roic, ret12m: t.ret12m, rsi14: t.rsi14, vol20d: t.vol20d },
     conclusion,
     news: scoreStockNews(news).items,
   };
+}
+
+// 把某一维度（最佳/最弱）翻译成「直观、具体、可核验」的中文短句，杜绝「安全边际 0」式抽象表述。
+// kind = 'best' | 'worst'；所有量化数字均来自该标的真实字段，便于用户一眼读懂优势/风险来源。
+function describeDim(key, stock, kind) {
+  const f = stock.fundamentals || {};
+  const t = stock.technicals || {};
+  const isFin = isFinancial(stock);
+  const pct = x => (x == null ? '—' : Math.round(x * 100) + '%');
+  const sign = v => (v == null ? '—' : (v >= 0 ? '+' : '') + Math.round(v * 100) + '%');
+  const pre = kind === 'best' ? '突出' : '偏弱';
+  switch (key) {
+    case '财务健康': {
+      const fs = isFin ? null : piotroskiF(f);
+      const z = isFin ? null : altmanZ(f);
+      const parts = [];
+      if (fs != null) parts.push(`Piotroski F=${fs}/9`);
+      if (z != null) parts.push(`Altman Z=${round(z, 2)}`);
+      return `财务质地${pre}（${parts.join('，') || '数据不足'}）`;
+    }
+    case '安全边际': {
+      const z = isFin ? null : altmanZ(f);
+      if (z == null) return isFin ? '金融业违约模型不适用，安全边际按中性计' : '安全边际数据不足';
+      return `财务安全边际${z >= 2.99 ? '充足' : '不足'}（Altman Z=${round(z, 2)}${z >= 2.99 ? '，远高于 2.99 警戒线' : '，逼近警戒线'}）`;
+    }
+    case '估值吸引力': {
+      const pe = f.pe, pePct = f.pePct;
+      const s = pePct != null ? `PE ${pe == null ? '—' : pe} 处历史 ${pct(pePct)} 分位` : (pe != null ? `PE ${pe}` : '估值数据不足');
+      return `估值${kind === 'best' ? '处低位' : '偏贵'}（${s}）`;
+    }
+    case '盈利质量': {
+      const roe = f.roe != null ? Math.round(f.roe * 100) + '%' : '—';
+      const roic = f.roic != null ? Math.round(f.roic * 100) + '%' : '—';
+      return `盈利质量${pre}（ROE ${roe}、ROIC ${roic}）`;
+    }
+    case '价格动量': {
+      return `中期动能${pre}（12 个月 ${sign(t.ret12m)}）`;
+    }
+    case '低波质量': {
+      return `股价波动${kind === 'best' ? '低、防御性好' : '偏大'}（年化波动 ${t.vol20d != null ? Math.round(t.vol20d * 100) + '%' : '—'}）`;
+    }
+    case '趋势': {
+      const above = [t.ma20, t.ma60, t.ma250].filter(m => m && t.price > m).length;
+      return `均线${kind === 'best' ? '多头排列' : '空头压制'}（站上 ${above}/3 条均线）`;
+    }
+    case 'RSI': {
+      return `RSI ${kind === 'best' ? '强势' : '偏弱'}区间（RSI ${t.rsi14 != null ? Math.round(t.rsi14) : '—'}）`;
+    }
+    case 'MACD': {
+      return `MACD 动能${kind === 'best' ? '金叉转强' : '走弱'}（柱 ${t.macdHist != null ? round(t.macdHist, 3) : '—'}）`;
+    }
+    case '消息情绪': {
+      const sc = scoreStockNews(stock.news || []).score;
+      return `消息面${kind === 'best' ? '偏正面' : '偏负面'}（情绪分 ${sc}）`;
+    }
+    default: return `${key}${pre}`;
+  }
 }
 
 // 公共：打分 → 组内 z-score → 排序 → 取 TopN。供 selectStocks 与 selectByTickers 复用。
