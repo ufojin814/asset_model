@@ -189,6 +189,7 @@ async function deepResearch(ticker, opts = {}) {
     framework: 'Serenity', generatedAt: new Date().toISOString(),
     nodes, macroScore: mScore, scores: score.scores,
     valuation: val, falsification: fals, rating,
+    conclusion: score.conclusion, radar: score.radar,
   };
   if (opts.save !== false) {
     const { saveReport } = require('./researchDB');

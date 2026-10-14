@@ -1,6 +1,46 @@
 {
   "entries": [
     {
+      "id": "deep_600036.SH_2026-10-14T14-26-14",
+      "type": "deep",
+      "ticker": "600036.SH",
+      "title": "深度研究 招商银行",
+      "file": "deep_600036.SH_2026-10-14T14-26-14.md",
+      "timestamp": "2026-10-14 14:26:14",
+      "date": "2026-10-14",
+      "summary": "> 研究框架：Serenity 投资研究框架 × Loop Engineering 对抗式迭代 ｜ 数据戳：2026-10-14 06:26:14 ｜ 标的戳：600036.SH"
+    },
+    {
+      "id": "deep_600036.SH_2026-10-14T14-26-14",
+      "type": "deep",
+      "ticker": "600036.SH",
+      "title": "深度研究 招商银行",
+      "file": "deep_600036.SH_2026-10-14T14-26-14.md",
+      "timestamp": "2026-10-14 14:26:14",
+      "date": "2026-10-14",
+      "summary": "> 研究框架：Serenity 投资研究框架 × Loop Engineering 对抗式迭代 ｜ 数据戳：2026-10-14 06:26:14 ｜ 标的戳：600036.SH"
+    },
+    {
+      "id": "deep_600036.SH_2026-10-14T14-25-17",
+      "type": "deep",
+      "ticker": "600036.SH",
+      "title": "深度研究 招商银行",
+      "file": "deep_600036.SH_2026-10-14T14-25-17.md",
+      "timestamp": "2026-10-14 14:25:17",
+      "date": "2026-10-14",
+      "summary": "> 研究框架：Serenity 投资研究框架 × Loop Engineering 对抗式迭代 ｜ 数据戳：2026-10-14 06:25:17 ｜ 标的戳：600036.SH"
+    },
+    {
+      "id": "deep_300308.SZ_2026-10-14T14-25-00",
+      "type": "deep",
+      "ticker": "300308.SZ",
+      "title": "深度研究 中际旭创",
+      "file": "deep_300308.SZ_2026-10-14T14-25-00.md",
+      "timestamp": "2026-10-14 14:25:00",
+      "date": "2026-10-14",
+      "summary": "> 研究框架：Serenity 投资研究框架 × Loop Engineering 对抗式迭代 ｜ 数据戳：2026-10-14 06:25:00 ｜ 标的戳：300308.SZ"
+    },
+    {
       "id": "selection_bank_2026-10-14T11-53-44",
       "type": "selection",
       "ticker": "bank",

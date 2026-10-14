@@ -125,10 +125,16 @@ async function scoreStock(stock) {
   const top = Object.entries(sub).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([k]) => k);
   const weak = Object.entries(sub).sort((a, b) => a[1] - b[1]).slice(0, 1).map(([k]) => k);
   const conclusion = `统一评分 ${unified}，基本面${fundamental}/技术面${technical}/消息面${sentiment}。优势：${top.join('、')}；短板：${weak.join('、')}。`;
+  // 每个标的「最大优势点 / 最大风险点」：取与雷达六维对齐的维度（保证与六维对比图一致）
+  const radarEntries = Object.entries(radar);
+  let best = radarEntries[0], worst = radarEntries[0];
+  for (const e of radarEntries) { if (e[1] > best[1]) best = e; if (e[1] < worst[1]) worst = e; }
   return {
     ticker: stock.ticker, name: stock.name, industry: stock.industry || '', theme: stock.theme || '',
     scores: { fundamental, technical, sentiment, unified, sub },
     radar,
+    best: { label: best[0], value: best[1] },
+    worst: { label: worst[0], value: worst[1] },
     detail: { fscore, zscore: z, pe: f.pe, pb: f.pb, roe: f.roe, roic: f.roic, ret12m: t.ret12m, rsi14: t.rsi14, vol20d: t.vol20d },
     conclusion,
     news: scoreStockNews(news).items,

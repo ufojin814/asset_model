@@ -237,8 +237,11 @@ async function runSelection() {
       let rows = '';
       ranked.forEach((s, idx) => {
         const isTop = idx < topN;
+        const adv = s.best ? `▲ 最大优势 · ${s.best.label} ${s.best.value}` : '';
+        const rsk = s.worst ? `▼ 最大风险 · ${s.worst.label} ${s.worst.value}` : '';
         rows += `<div class="stock-row"><div class="stock-rank ${isTop ? 'r-top' : ''}">${idx + 1}</div>
-          <div class="stock-main"><div class="stock-name">${s.name}${isTop ? ' <span class="pick-tag">入选</span>' : ''}</div><div class="stock-code">${s.ticker}</div></div>
+          <div class="stock-main"><div class="stock-name">${s.name}${isTop ? ' <span class="pick-tag">入选</span>' : ''}</div><div class="stock-code">${s.ticker}</div>
+          <div class="stock-tags"><span class="adv">${adv}</span><span class="risk">${rsk}</span></div></div>
           <div class="score-bar"><i style="width:${Math.min(100, s.scores.unified)}%"></i></div>
           <div class="score-num">${s.scores.unified}</div></div>`;
       });
@@ -288,15 +291,123 @@ async function runDeep() {
           <div class="md"><p style="color:#d83a3a">${r.error || '无法解析标的'}</p></div>`;
         box.appendChild(card); return;
       }
-      const tier = (r.rating && r.rating.tier) || 'T5';
-      const tierName = (r.rating && r.rating.tierName) || '';
-      card.innerHTML = `<div class="report-head"><div><div class="rn">${r.name || r.code}</div><div class="rc">${r.code}</div></div>
-        <span class="tier-badge ${TIER_COLOR[tier] || 'tier-T5'}">${tier} ${tierName}</span></div>
-        <div class="md">${renderMarkdown(r.markdown)}</div>`;
+      card.innerHTML = renderDeepReport(r);
       box.appendChild(card);
+      // 六维雷达（由结构化 json 渲染，后台仍以 markdown 标准格式存储）
+      const sub = (r.json && r.json.scores && r.json.scores.sub) || {};
+      const radarDims = ['财务健康', '安全边际', '估值吸引力', '价格动量', '低波质量', '消息情绪'].map(k => ({ label: k, value: sub[k] || 0 }));
+      const canvas = $('.deep-radar canvas', card);
+      if (canvas) drawRadar(canvas, radarDims);
+      // 原始 Markdown 折叠
+      const rawBtn = $('[data-raw]', card);
+      if (rawBtn) rawBtn.onclick = () => { const rv = $('.deep-raw', card); if (rv) rv.classList.toggle('hidden'); };
     });
   } catch (e) { box.innerHTML = '<div class="empty">请求异常：' + e.message + '</div>'; }
   finally { $('#btnDeep').disabled = false; }
+}
+
+// ---------- 深度研究：精美展示页（数据来自后端结构化 json，后台仍以 markdown 标准格式存储） ----------
+function esc2(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function tierRankColor(t) { return TIER_COLOR[t] || 'tier-T5'; }
+
+function renderDeepReport(r) {
+  const j = r.json || {};
+  const rating = r.rating || {};
+  const tier = rating.tier || 'T5';
+  const pool = rating.pool || '';
+  const scores = j.scores || {};
+  const sub = scores.sub || {};
+  const val = j.valuation || {};
+  const fals = j.falsification || [];
+  const nodes = j.nodes || [];
+  const unified = scores.unified || 0;
+  const C = 2 * Math.PI * 52;
+  const off = C * (1 - Math.min(100, unified) / 100);
+
+  const subOrder = ['财务健康', '安全边际', '估值吸引力', '盈利质量', '价格动量', '低波质量', '趋势', 'RSI', 'MACD', '消息情绪'];
+  const dimBars = subOrder.map(k => {
+    const v = sub[k];
+    if (v == null) return '';
+    const cls = v >= 70 ? 'good' : v >= 50 ? 'mid' : 'bad';
+    return `<div class="dim-row"><span class="dim-name">${k}</span><span class="dim-track"><i class="dim-fill ${cls}" style="width:${v}%"></i></span><span class="dim-val">${v}</span></div>`;
+  }).join('');
+
+  const sevCls = { '致命': 'f-sev-fatal', '严重': 'f-sev-high', '一般': 'f-sev-mid', '轻微': 'f-sev-low', '无': 'f-sev-none' };
+  const falsRows = fals.map(f => `<div class="fals-row"><span class="fals-badge ${sevCls[f.level] || 'f-sev-mid'}">${f.level}</span><span class="fals-point">${esc2(f.point)}</span><span class="fals-ev">${esc2(f.evidence)}</span></div>`).join('');
+
+  const gateCls = { '通过': 'g-ok', '熔断': 'g-fail', '返工': 'g-warn' };
+  const gateRows = nodes.map(n => `<div class="gate-row"><span class="gate-dot ${gateCls[n[1]] || 'g-ok'}"></span><span class="gate-name">${esc2(n[0])}</span><span class="gate-st ${gateCls[n[1]] || 'g-ok'}">${esc2(n[1])}</span><span class="gate-basis">${esc2(n[2])}</span></div>`).join('');
+
+  const scenRows = (val.scenarios || []).map(s => {
+    const up = s.upside || 0;
+    const cls = up >= 0 ? 'good' : 'bad';
+    return `<div class="scen-row"><span class="scen-name">${esc2(s.name)}</span>
+      <span class="scen-track"><i class="scen-fill ${cls}" style="width:${Math.min(100, Math.abs(up))}%"></i></span>
+      <span class="scen-up ${cls}">${up >= 0 ? '+' : ''}${up}%</span>
+      <span class="scen-price">${s.targetPrice}</span>
+      <span class="scen-p">${Math.round((s.p || 0) * 100)}%</span></div>`;
+  }).join('');
+
+  const headline = (val.weightedUpside != null) ? `概率加权目标价 <b>${val.weightedTarget}</b>（加权上行空间 ${val.weightedUpside >= 0 ? '+' : ''}${val.weightedUpside}%）` : '';
+  const concl = j.conclusion || (r.markdown ? '' : '');
+
+  return `
+  <div class="deep-hero">
+    <div class="deep-id"><div class="dn">${esc2(r.name || r.code)}</div><div class="dc">${esc2(r.code || '')}</div></div>
+    <div class="deep-ring-wrap">
+      <svg viewBox="0 0 120 120" class="deep-ring">
+        <circle cx="60" cy="60" r="52" class="ring-bg"></circle>
+        <circle cx="60" cy="60" r="52" class="ring-fg" style="stroke-dasharray:${C.toFixed(1)};stroke-dashoffset:${off.toFixed(1)}"></circle>
+      </svg>
+      <div class="deep-ring-num"><b>${unified}</b><span>统一评分</span></div>
+    </div>
+    <span class="tier-badge ${tierRankColor(tier)} deep-tier">${tier} · ${pool}</span>
+  </div>
+
+  <div class="deep-stats">
+    <div class="dstat"><b>${scores.fundamental != null ? scores.fundamental : '—'}</b><span>基本面</span></div>
+    <div class="dstat"><b>${scores.technical != null ? scores.technical : '—'}</b><span>技术面</span></div>
+    <div class="dstat"><b>${scores.sentiment != null ? scores.sentiment : '—'}</b><span>消息面</span></div>
+    <div class="dstat"><b>${j.macroScore != null ? j.macroScore : '—'}</b><span>宏观评分</span></div>
+  </div>
+
+  <div class="deep-grid">
+    <div class="deep-section">
+      <div class="ds-title"><i class="fas fa-chart-pie"></i> 六维对比雷达</div>
+      <div class="deep-radar"><canvas></canvas></div>
+    </div>
+    <div class="deep-section">
+      <div class="ds-title"><i class="fas fa-layer-group"></i> 十维度评分</div>
+      <div class="dim-list">${dimBars}</div>
+    </div>
+  </div>
+
+  <div class="deep-section">
+    <div class="ds-title"><i class="fas fa-project-diagram"></i> 节点门禁状态（Serenity 串行门禁）</div>
+    <div class="gate-list">${gateRows}</div>
+  </div>
+
+  <div class="deep-section">
+    <div class="ds-title"><i class="fas fa-balance-scale"></i> 五情景估值建模</div>
+    <div class="scen-head"><span class="scen-name">情景</span><span class="scen-track"></span><span class="scen-up">空间</span><span class="scen-price">目标价</span><span class="scen-p">概率</span></div>
+    ${scenRows}
+    <div class="scen-foot">${headline}</div>
+  </div>
+
+  <div class="deep-section">
+    <div class="ds-title"><i class="fas fa-shield-alt"></i> 基本面反向证伪</div>
+    <div class="fals-list">${falsRows}</div>
+  </div>
+
+  <div class="deep-concl">
+    <div class="dc-title"><i class="fas fa-flag-checkered"></i> 最终结论</div>
+    <div class="dc-tier">投资评级 <b>${tier}</b>（${pool}）｜ 统一评分 ${unified}</div>
+    <div class="dc-body">${esc2(concl)}</div>
+  </div>
+
+  <div class="deep-raw-toggle"><button class="btn" data-raw="${encodeURIComponent(r.markdown || '')}"><i class="fas fa-file-alt"></i> 查看原始 Markdown 报告</button></div>
+  <div class="deep-raw hidden"><div class="md">${renderMarkdown(r.markdown || '')}</div></div>
+  `;
 }
 
 // ---------- 研究资料库 ----------
